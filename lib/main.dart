@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 
 void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+  
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -59,6 +61,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    BleManager bleManager = BleManager.getInstance();
+    bleManager.createClient();
+
+    
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //

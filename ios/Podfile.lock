@@ -1,0 +1,35 @@
+PODS:
+  - beacon_broadcast (0.0.1):
+    - Flutter
+  - Flutter (1.0.0)
+  - flutter_ble_lib (0.0.1):
+    - Flutter
+    - MultiplatformBleAdapter (= 0.0.4)
+  - MultiplatformBleAdapter (0.0.4)
+
+DEPENDENCIES:
+  - beacon_broadcast (from `.symlinks/plugins/beacon_broadcast/ios`)
+  - Flutter (from `Flutter`)
+  - flutter_ble_lib (from `.symlinks/plugins/flutter_ble_lib/ios`)
+
+SPEC REPOS:
+  trunk:
+    - MultiplatformBleAdapter
+
+EXTERNAL SOURCES:
+  beacon_broadcast:
+    :path: ".symlinks/plugins/beacon_broadcast/ios"
+  Flutter:
+    :path: Flutter
+  flutter_ble_lib:
+    :path: ".symlinks/plugins/flutter_ble_lib/ios"
+
+SPEC CHECKSUMS:
+  beacon_broadcast: 2c2562111f7b7e0f1ab59487f6bc805805e3c9f3
+  Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
+  flutter_ble_lib: 9b0fcef11a0cb8432317e445c4cd413f9cab3b08
+  MultiplatformBleAdapter: 1beec49bbd1585505a73d4bbf649e05a55dbd85e
+
+PODFILE CHECKSUM: 1b66dae606f75376c5f2135a8290850eeb09ae83
+
+COCOAPODS: 1.8.4
