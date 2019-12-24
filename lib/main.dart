@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:beacon_broadcast/beacon_broadcast.dart';
 
 void main() => runApp(MyApp());
 
@@ -64,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
     BleManager bleManager = BleManager.getInstance();
     bleManager.createClient();
 
-    
+
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
