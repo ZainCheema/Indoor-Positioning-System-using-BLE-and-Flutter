@@ -18,6 +18,19 @@
 	<string>$(FLUTTER_BUILD_NAME)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+    <string>Reason why app needs location</string>
+  <!-- Always -->
+  <!-- for iOS 11 + -->
+     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+     <string>Reason why app needs location</string>
+  <!-- for iOS 9/10 -->
+     <key>NSLocationAlwaysUsageDescription</key>
+     <string>Reason why app needs location</string>
+  <!-- Bluetooth Privacy -->
+  <!-- for iOS 13 + -->
+  <key>NSBluetoothAlwaysUsageDescription</key>
+  <string>Reason why app needs bluetooth</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>

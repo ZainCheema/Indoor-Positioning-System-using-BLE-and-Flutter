@@ -23,8 +23,9 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.2
-  flutter_ble_lib: 2.0.0-dev.4
+  flutter_ble_lib: 2.0.1
   beacon_broadcast: 0.2.1
+  quiver: '>=2.0.0 <3.0.0'
 
 dev_dependencies:
   flutter_test:

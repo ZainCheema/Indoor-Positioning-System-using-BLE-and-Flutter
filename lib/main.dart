@@ -6,7 +6,7 @@ void main() => runApp(MyApp());
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
-  
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -33,6 +33,7 @@ class MyHomePage extends StatefulWidget {
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
+
   // how it looks.
 
   // This class is the configuration for the state. It holds the values (in this
@@ -62,9 +63,34 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    BleManager bleManager = BleManager.getInstance();
-    bleManager.createClient();
+    // BleManager bleManager = BleManager();
+    // bleManager.createClient();
 
+    // bleManager.observeBluetoothState().listen((btState) {
+    //   print(btState);
+    //   //do your BT logic, open different screen, etc.
+    //   bleManager.startPeripheralScan().listen((scanResult) {
+    //     //Scan one peripheral and stop scanning
+    //     print(
+    //         "Scanned Peripheral ${scanResult.peripheral.name}, RSSI ${scanResult.rssi}, Ad Data ${scanResult.advertisementData.manufacturerData}");
+    //     // bleManager.stopDeviceScan();
+    //   });
+    // });
+
+    BeaconBroadcast beaconBroadcast = BeaconBroadcast();
+
+    beaconBroadcast
+        .setUUID('39ED98FF-2900-441A-802F-9C398FC199D2')
+        .setMajorId(1)
+        .setMinorId(100)
+        .setLayout(BeaconBroadcast.EDDYSTONE_UID_LAYOUT)
+        .start();
+
+    var ad = beaconBroadcast.isAdvertising();
+
+    if (ad != null) {
+      print("Beacon is advertising");
+    }
 
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
