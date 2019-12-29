@@ -4,7 +4,7 @@ import 'beacon_tools.dart';
 import 'package:flutter/foundation.dart';
 export 'beacon_tools.dart';
 
-classs UmbrellaBeacon {
+class UmbrellaBeacon {
   // Singleton
   UmbrellaBeacon._();
 
@@ -12,12 +12,9 @@ classs UmbrellaBeacon {
 
   static UmbrellaBeacon get instance => _instance;
 
-    Stream<Beacon> scan({@required Duration timeout}) => FlutterBleLib()
-      .createClient(timeout)
-      .map((scanResult) {
-        return Beacon.fromScanResult(scanResult);
-      })
-      .expand((b) => b)
-      .where((b) => b != null);
-
+    Stream<Beacon> scan() => FlutterBleLib()
+      .createClient()
+      .then(
+         return Beacon.fromScanResult(scanResult);
+      );
 }
