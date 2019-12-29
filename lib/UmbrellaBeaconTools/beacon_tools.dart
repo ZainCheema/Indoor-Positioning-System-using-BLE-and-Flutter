@@ -1,6 +1,7 @@
 import 'package:convert/convert.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:umbrella/UmbrellaBeaconTools/umbrella_beacon.dart';
 import 'dart:math';
 import 'package:umbrella/UmbrellaBeaconTools/utils.dart';
 import 'package:quiver/core.dart';
@@ -38,6 +39,7 @@ abstract class Beacon {
   static List<Beacon> fromScanResult(ScanResult scanResult) {
     return <Beacon>[
       EddystoneUID.fromScanResult(scanResult),
+      IBeacon.fromScanResult(scanResult),
     ].where((b) => b != null).toList();
   }
 }
@@ -105,61 +107,67 @@ class EddystoneUID extends Eddystone {
       ]);
 }
 
-// class IBeacon extends Beacon {
-//   final String uuid;
-//   final int major;
-//   final int minor;
+// * Below is a resource for how the iBeacon advertising packet is structured
+// * https://support.kontakt.io/hc/en-gb/articles/201492492-iBeacon-advertising-packet-structure
 
-//   const IBeacon(
-//       {@required this.uuid,
-//       @required this.major,
-//       @required this.minor,
-//       @required int tx,
-//       @required ScanResult scanResult})
-//       : super(tx: tx, scanResult: scanResult);
+class IBeacon extends Beacon {
+  final String uuid;
+  final int major;
+  final int minor;
 
-//   factory IBeacon.fromScanResult(ScanResult scanResult) {
+  const IBeacon(
+      {@required this.uuid,
+      @required this.major,
+      @required this.minor,
+      @required int tx,
+      @required ScanResult scanResult})
+      : super(tx: tx, scanResult: scanResult);
 
-//     scanResult.advertisementData.manufacturerData.
+  factory IBeacon.fromScanResult(ScanResult scanResult) {
+    int manufacturerIdIndex = 0;
 
-//     if (!scanResult.advertisementData.manufacturerData
-//         .containsKey(IBeaconManufacturerId)) {
-//       return null;
-//     }
-//     if (scanResult
-//             .advertisementData.manufacturerData[IBeaconManufacturerId].length <
-//         23) {
-//       return null;
-//     }
-//     if (scanResult.advertisementData.manufacturerData[IBeaconManufacturerId]
-//                 [0] !=
-//             0x02 ||
-//         scanResult.advertisementData.manufacturerData[IBeaconManufacturerId]
-//                 [1] !=
-//             0x15) {
-//       return null;
-//     }
-//     List<int> rawBytes =
-//         scanResult.advertisementData.manufacturerData[IBeaconManufacturerId];
-//     var uuid = byteListToHexString(rawBytes.sublist(2, 18));
-//     var major = twoByteToInt16(rawBytes[18], rawBytes[19]);
-//     var minor = twoByteToInt16(rawBytes[20], rawBytes[21]);
-//     var tx = byteToInt8(rawBytes[22]);
-//     return IBeacon(
-//       uuid: uuid,
-//       major: major,
-//       minor: minor,
-//       tx: tx,
-//       scanResult: scanResult,
-//     );
-//   }
+    if (!scanResult.advertisementData.manufacturerData
+        .contains(IBeaconManufacturerId)) {
+      return null;
+    } else {
+      // Find the index where the iBeacon manufacturer id is contained
+      manufacturerIdIndex = scanResult.advertisementData.manufacturerData
+          .indexWhere((value) => value == IBeaconManufacturerId);
+    }
+    // ! Re-write statement to say " if the length of the whole list - length of list from where manufacturerIdIndex is to the end < 23"
+    if (scanResult
+            .advertisementData.manufacturerData.length - manufacturerIdIndex + 1 <
+        23) {
+      return null;
+    }
+    // ! Re-write statement to say " if the first element in whole list after manufacturerIdIndex != 0x02"
+    // ! Re-write statement to say " if the second element in whole list after manufacturerIdIndex != 0x15"
+    if (scanResult.advertisementData.manufacturerData[manufacturerIdIndex + 1] != 0x02 ||
+        scanResult.advertisementData.manufacturerData[manufacturerIdIndex + 2] != 0x15) {
+      return null;
+    }
+    // ! You will need to get a sublist of the whole list using manufacturerIdIndex as a starting index
+    List<int> rawBytes =
+        scanResult.advertisementData.manufacturerData.sublist(manufacturerIdIndex);
+    var uuid = byteListToHexString(rawBytes.sublist(2, 18));
+    var major = twoByteToInt16(rawBytes[18], rawBytes[19]);
+    var minor = twoByteToInt16(rawBytes[20], rawBytes[21]);
+    var tx = byteToInt8(rawBytes[22]);
+    return IBeacon(
+      uuid: uuid,
+      major: major,
+      minor: minor,
+      tx: tx,
+      scanResult: scanResult,
+    );
+  }
 
-//   int get hash => hashObjects([
-//         "IBeacon",
-//         IBeaconManufacturerId,
-//         this.uuid,
-//         this.major,
-//         this.minor,
-//         this.tx
-//       ]);
-// }
+  int get hash => hashObjects([
+        "IBeacon",
+        IBeaconManufacturerId,
+        this.uuid,
+        this.major,
+        this.minor,
+        this.tx
+      ]);
+}
