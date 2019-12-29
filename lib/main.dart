@@ -63,19 +63,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    // BleManager bleManager = BleManager();
-    // bleManager.createClient();
-
-    // bleManager.observeBluetoothState().listen((btState) {
-    //   print(btState);
-    //   //do your BT logic, open different screen, etc.
-    //   bleManager.startPeripheralScan().listen((scanResult) {
-    //     //Scan one peripheral and stop scanning
-    //     print(
-    //         "Scanned Peripheral ${scanResult.peripheral.name}, RSSI ${scanResult.rssi}, Ad Data ${scanResult.advertisementData.manufacturerData}");
-    //     // bleManager.stopDeviceScan();
-    //   });
-    // });
 
     BeaconBroadcast beaconBroadcast = BeaconBroadcast();
 

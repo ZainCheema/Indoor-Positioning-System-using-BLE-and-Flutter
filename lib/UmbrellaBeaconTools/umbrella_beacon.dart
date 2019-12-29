@@ -12,9 +12,14 @@ class UmbrellaBeacon {
 
   static UmbrellaBeacon get instance => _instance;
 
-    Stream<Beacon> scan() => FlutterBleLib()
-      .createClient()
-      .then(
-         return Beacon.fromScanResult(scanResult);
-      );
+  Stream<Beacon> scan() {
+    BleManager bleManager = BleManager();
+    bleManager.createClient();
+
+    bleManager.observeBluetoothState().listen((btState) {
+      bleManager.startPeripheralScan().listen((scanResult) {
+        return Beacon.fromScanResult(scanResult);
+      });
+    });
+  }
 }
