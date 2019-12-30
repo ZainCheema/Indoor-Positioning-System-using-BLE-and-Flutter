@@ -55,7 +55,7 @@ abstract class Eddystone extends Beacon {
   final int frameType;
 
   @override
-  int get txAt1Meter => tx - 41;
+  int get txAt1Meter => tx - 59;
 }
 
 class EddystoneUID extends Eddystone {
@@ -107,8 +107,9 @@ class EddystoneUID extends Eddystone {
       ]);
 }
 
-// * Below is a resource for how the iBeacon advertising packet is structured
+// * Below are resources for how the iBeacon advertising packet is structured
 // * https://support.kontakt.io/hc/en-gb/articles/201492492-iBeacon-advertising-packet-structure
+// * https://stackoverflow.com/questions/18906988/what-is-the-ibeacon-bluetooth-profile/19040616#19040616
 
 class IBeacon extends Beacon {
   final String uuid;
