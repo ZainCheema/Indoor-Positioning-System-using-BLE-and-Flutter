@@ -62,6 +62,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  // * https://www.beaconzone.co.uk/choosinguuidmajorminorgl
+
   void startBeaconBroadcast() async {
     BeaconBroadcast beaconBroadcast = BeaconBroadcast();
 
@@ -71,26 +73,28 @@ class _MyHomePageState extends State<MyHomePage> {
       case BeaconStatus.SUPPORTED:
         print("You're good to go, you can advertise as a beacon");
 
-    if(utf8.encode('3ce2ef69-4414-469d-9d55-3ec7fcc38520').length == 16) {
-      print("UUID is valid.");
-    } else {
-      print(utf8.encode('3ce2ef69-4414-469d-9d55-3ec7fcc38520').length);
-    }
+        // if (utf8.encode('3ce2ef69-4414-469d-9d55-3ec7fcc38520').length == 16) {
+        //   print("UUID is valid.");
+        // } else {
+        //   print(utf8.encode('3ce2ef69-4414-469d-9d55-3ec7fcc38520').length);
+        // }
 
-    beaconBroadcast
-        .setUUID('8b0ca750-e7a7-4e14-bd99-095477cb3e77')
-        .setMajorId(1)
-        .setMinorId(100)
-        .setTransmissionPower(-59) //optional
-        .setLayout(
-            BeaconBroadcast.EDDYSTONE_UID_LAYOUT) //Android-only, optional
-        .start();
+        // ! EDDYSTONE DOESNT HAVE MAJOR & MINOR VALUES! IBEACON DOES! HENCE THE NO WORKING!
+        // ! https://www.beaconzone.co.uk/choosinguuidmajorminor
+        // ! https://github.com/google/eddystone/issues/188
 
-    var ad = beaconBroadcast.isAdvertising();
+        beaconBroadcast
+            .setUUID('8b0ca750-e7a7-4e14-bd99-095477cb3e77')
+            .setMajorId(1)
+            .setMinorId(100)
+            .setLayout(
+                 BeaconBroadcast.EDDYSTONE_UID_LAYOUT) //Android-only, optional
+            .start();
 
-    if (ad != null) {
-      print("Beacon is advertising");
-    }
+        beaconBroadcast.getAdvertisingStateChange().listen((isAdvertising) {
+          print("Beacon is advertising");
+        });
+
         break;
       case BeaconStatus.NOT_SUPPORTED_MIN_SDK:
         // Your Android system version is too low (min. is 21)
@@ -106,9 +110,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    
     startBeaconBroadcast();
-
 
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
