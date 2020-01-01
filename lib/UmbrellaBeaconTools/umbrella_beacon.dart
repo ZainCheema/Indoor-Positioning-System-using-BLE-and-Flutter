@@ -16,9 +16,11 @@ class UmbrellaBeacon {
     bleManager.createClient();
 
     bleManager.observeBluetoothState().listen((btState) {
-      bleManager.startPeripheralScan().listen((scanResult) {
+      bleManager.startPeripheralScan().map((scanResult) {
         return Beacon.fromScanResult(scanResult);
-      });
+      })
+      .expand((b) => b)
+      .where((b) => b != null);
     });
   }
 }

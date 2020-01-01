@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:flutter_ble_lib/internal/bridge/internal_bridge_lib.dart';
+import 'UmbrellaBeaconTools/umbrella_beacon.dart';
 import 'package:beacon_broadcast/beacon_broadcast.dart';
 
 void main() => runApp(MyApp());
@@ -28,8 +30,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
-
+  UmbrellaBeacon umbrellaBeacon = UmbrellaBeacon.instance;
+FlutterBleLib _flutterBleLib = FlutterBleLib();
 
   @override
   Widget build(BuildContext context) {
