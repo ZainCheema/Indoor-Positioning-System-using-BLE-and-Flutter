@@ -11,16 +11,16 @@ class UmbrellaBeacon {
 
   static UmbrellaBeacon get instance => _instance;
 
-  Stream<Beacon> scan() {
-    BleManager bleManager = BleManager();
-    bleManager.createClient();
-
+  Stream<Beacon> scan(BleManager bleManager) {
     bleManager.observeBluetoothState().listen((btState) {
-      bleManager.startPeripheralScan().map((scanResult) {
-        return Beacon.fromScanResult(scanResult);
-      })
-      .expand((b) => b)
-      .where((b) => b != null);
+      if(btState == BluetoothState.POWERED_ON) {
+        print("YES YES YES");
+          bleManager.startPeripheralScan().map((scanResult) {
+            return Beacon.fromScanResult(scanResult);
+          })
+          .expand((b) => b)
+          .where((b) => b != null);
+      }
     });
   }
 }

@@ -126,7 +126,7 @@ class IBeacon extends Beacon {
 
   factory IBeacon.fromScanResult(ScanResult scanResult) {
     int manufacturerIdIndex = 0;
-
+      print("Cunt");
     if (!scanResult.advertisementData.manufacturerData
         .contains(IBeaconManufacturerId)) {
       return null;
