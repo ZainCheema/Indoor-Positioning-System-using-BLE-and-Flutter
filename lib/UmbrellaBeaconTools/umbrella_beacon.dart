@@ -14,12 +14,9 @@ class UmbrellaBeacon {
   Stream<Beacon> scan(BleManager bleManager) {
     bleManager.observeBluetoothState().listen((btState) {
       if(btState == BluetoothState.POWERED_ON) {
-        print("YES YES YES");
-          bleManager.startPeripheralScan().map((scanResult) {
+         bleManager.startPeripheralScan().listen((scanResult) {
             return Beacon.fromScanResult(scanResult);
-          })
-          .expand((b) => b)
-          .where((b) => b != null);
+         });
       }
     });
   }

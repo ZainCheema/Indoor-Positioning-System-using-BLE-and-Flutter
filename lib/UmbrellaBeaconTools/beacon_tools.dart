@@ -71,6 +71,10 @@ class EddystoneUID extends Eddystone {
       : super(tx: tx, scanResult: scanResult, frameType: frameType);
 
   factory EddystoneUID.fromScanResult(ScanResult scanResult) {
+
+
+    print("Scanning for Eddystone beacon");
+
     if (!scanResult.advertisementData.serviceData
         .containsKey(EddystoneServiceId)) {
       return null;
@@ -83,12 +87,19 @@ class EddystoneUID extends Eddystone {
         0x00) {
       return null;
     }
+
+    print("Eddystone beacon detected!");
+
     List<int> rawBytes =
         scanResult.advertisementData.serviceData[EddystoneServiceId];
     var frameType = rawBytes[0];
+    print("frameType = " + frameType.toString());
     var tx = byteToInt8(rawBytes[1]);
+    print("tx power = " + tx.toString());
     var namespaceId = byteListToHexString(rawBytes.sublist(2, 12));
+    print("namespace id = "  + namespaceId);
     var beaconId = byteListToHexString(rawBytes.sublist(12, 18));
+    print("beacon id = " + beaconId);
     return EddystoneUID(
         frameType: frameType,
         namespaceId: namespaceId,
@@ -126,30 +137,48 @@ class IBeacon extends Beacon {
 
   factory IBeacon.fromScanResult(ScanResult scanResult) {
     int manufacturerIdIndex = 0;
-      print("Cunt");
+    
+    print("Scanning for iBeacon");
+
     if (!scanResult.advertisementData.manufacturerData
         .contains(IBeaconManufacturerId)) {
-      return null;
+          
+      for (var k in scanResult.advertisementData.serviceData.keys) {
+        print(scanResult.advertisementData.localName);
+        print(k);
+        print(scanResult.advertisementData.serviceData[k]);
+        print(scanResult.advertisementData.manufacturerData);
+      }
+
     } else {
       // Find the index where the iBeacon manufacturer id is contained
       manufacturerIdIndex = scanResult.advertisementData.manufacturerData
           .indexWhere((value) => value == IBeaconManufacturerId);
+      print(manufacturerIdIndex);
     }
     // ! Re-write statement to say " if the length of the whole list - length of list from where manufacturerIdIndex is to the end < 23"
-    if (scanResult
-            .advertisementData.manufacturerData.length - manufacturerIdIndex + 1 <
+    if (scanResult.advertisementData.manufacturerData.length -
+            manufacturerIdIndex +
+            1 <
         23) {
       return null;
     }
     // ! Re-write statement to say " if the first element in whole list after manufacturerIdIndex != 0x02"
     // ! Re-write statement to say " if the second element in whole list after manufacturerIdIndex != 0x15"
-    if (scanResult.advertisementData.manufacturerData[manufacturerIdIndex + 1] != 0x02 ||
-        scanResult.advertisementData.manufacturerData[manufacturerIdIndex + 2] != 0x15) {
+    if (scanResult
+                .advertisementData.manufacturerData[manufacturerIdIndex + 1] !=
+            0x02 ||
+        scanResult
+                .advertisementData.manufacturerData[manufacturerIdIndex + 2] !=
+            0x15) {
       return null;
     }
+
+    print("iBeacon detected!");
+
     // ! You will need to get a sublist of the whole list using manufacturerIdIndex as a starting index
-    List<int> rawBytes =
-        scanResult.advertisementData.manufacturerData.sublist(manufacturerIdIndex);
+    List<int> rawBytes = scanResult.advertisementData.manufacturerData
+        .sublist(manufacturerIdIndex);
     var uuid = byteListToHexString(rawBytes.sublist(2, 18));
     var major = twoByteToInt16(rawBytes[18], rawBytes[19]);
     var minor = twoByteToInt16(rawBytes[20], rawBytes[21]);

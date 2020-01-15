@@ -79,6 +79,10 @@ class _MyHomePageState extends State<MyHomePage> {
   _startScan() {
     print("Scanning now");
 
+    if(bleManager == null || umbrellaBeacon == null) {
+      print('BleManager is null!!!');
+    }
+
     _scanSubscription = umbrellaBeacon.scan(bleManager).listen((beacon) {
       print('localName: ${beacon.scanResult.advertisementData.localName}');
       print(
@@ -161,6 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
     tiles.addAll(_buildScanResultTiles());
 
     return new MaterialApp(
+      themeMode: ThemeMode.dark,
       home: new Scaffold(
         appBar: new AppBar(
           title: const Text('Umbrella Beacon Example'),
