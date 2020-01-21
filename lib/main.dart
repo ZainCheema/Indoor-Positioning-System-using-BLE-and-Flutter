@@ -34,6 +34,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   UmbrellaBeacon umbrellaBeacon = UmbrellaBeacon.instance;
+
   BleManager bleManager = BleManager();
 
   // Scanning

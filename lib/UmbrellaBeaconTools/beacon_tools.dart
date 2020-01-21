@@ -38,7 +38,7 @@ abstract class Beacon {
   // Returns the first found beacon protocol in one device
   static List<Beacon> fromScanResult(ScanResult scanResult) {
     return <Beacon>[
-      EddystoneUID.fromScanResult(scanResult),
+     // EddystoneUID.fromScanResult(scanResult),
       IBeacon.fromScanResult(scanResult),
     ].where((b) => b != null).toList();
   }
@@ -77,14 +77,17 @@ class EddystoneUID extends Eddystone {
 
     if (!scanResult.advertisementData.serviceData
         .containsKey(EddystoneServiceId)) {
+          print("Nope");
       return null;
     }
     if (scanResult.advertisementData.serviceData[EddystoneServiceId].length <
         18) {
+          print("Nope");
       return null;
     }
     if (scanResult.advertisementData.serviceData[EddystoneServiceId][0] !=
         0x00) {
+          print("Nope");
       return null;
     }
 
@@ -100,6 +103,7 @@ class EddystoneUID extends Eddystone {
     print("namespace id = "  + namespaceId);
     var beaconId = byteListToHexString(rawBytes.sublist(12, 18));
     print("beacon id = " + beaconId);
+    
     return EddystoneUID(
         frameType: frameType,
         namespaceId: namespaceId,
@@ -149,7 +153,6 @@ class IBeacon extends Beacon {
         print(scanResult.advertisementData.serviceData[k]);
         print(scanResult.advertisementData.manufacturerData);
       }
-
     } else {
       // Find the index where the iBeacon manufacturer id is contained
       manufacturerIdIndex = scanResult.advertisementData.manufacturerData
