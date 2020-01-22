@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:convert/convert.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
@@ -38,7 +40,7 @@ abstract class Beacon {
   // Returns the first found beacon protocol in one device
   static List<Beacon> fromScanResult(ScanResult scanResult) {
     return <Beacon>[
-     // EddystoneUID.fromScanResult(scanResult),
+      //EddystoneUID.fromScanResult(scanResult),
       IBeacon.fromScanResult(scanResult),
     ].where((b) => b != null).toList();
   }
@@ -140,12 +142,33 @@ class IBeacon extends Beacon {
       : super(tx: tx, scanResult: scanResult);
 
   factory IBeacon.fromScanResult(ScanResult scanResult) {
+
+
+    
     int manufacturerIdIndex = 0;
     
     print("Scanning for iBeacon");
 
-    if (!scanResult.advertisementData.manufacturerData
-        .contains(IBeaconManufacturerId)) {
+    Int8List manuData = scanResult.advertisementData.manufacturerData;
+
+    print("iBeacon tx Power: " + scanResult.advertisementData.txPowerLevel.toString());
+
+    Map<String, Int8List> serviceData = scanResult.advertisementData.serviceData;
+    
+    manuData.forEach((int keys) {
+      print("Keys : " + keys.toString());
+     // print("Values : " + manuData[keys].toString());
+      // if(manuData[keys] == IBeaconManufacturerId) {
+      //   print("Hot Dog!");
+      // }
+    });
+
+    print("SERVICE DATA ");
+    serviceData.forEach((k,v) => print('${k}: ${v}')); 
+
+
+    if (!scanResult.advertisementData.serviceData
+        .containsKey(IBeaconManufacturerId)) {
           
       for (var k in scanResult.advertisementData.serviceData.keys) {
         print(scanResult.advertisementData.localName);
@@ -154,6 +177,7 @@ class IBeacon extends Beacon {
         print(scanResult.advertisementData.manufacturerData);
       }
     } else {
+
       // Find the index where the iBeacon manufacturer id is contained
       manufacturerIdIndex = scanResult.advertisementData.manufacturerData
           .indexWhere((value) => value == IBeaconManufacturerId);
