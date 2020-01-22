@@ -73,23 +73,18 @@ class EddystoneUID extends Eddystone {
       : super(tx: tx, scanResult: scanResult, frameType: frameType);
 
   factory EddystoneUID.fromScanResult(ScanResult scanResult) {
-
-
     print("Scanning for Eddystone beacon");
 
     if (!scanResult.advertisementData.serviceData
         .containsKey(EddystoneServiceId)) {
-          print("Nope");
       return null;
     }
     if (scanResult.advertisementData.serviceData[EddystoneServiceId].length <
         18) {
-          print("Nope");
       return null;
     }
     if (scanResult.advertisementData.serviceData[EddystoneServiceId][0] !=
         0x00) {
-          print("Nope");
       return null;
     }
 
@@ -102,10 +97,10 @@ class EddystoneUID extends Eddystone {
     var tx = byteToInt8(rawBytes[1]);
     print("tx power = " + tx.toString());
     var namespaceId = byteListToHexString(rawBytes.sublist(2, 12));
-    print("namespace id = "  + namespaceId);
+    print("namespace id = " + namespaceId);
     var beaconId = byteListToHexString(rawBytes.sublist(12, 18));
     print("beacon id = " + beaconId);
-    
+
     return EddystoneUID(
         frameType: frameType,
         namespaceId: namespaceId,
@@ -124,7 +119,7 @@ class EddystoneUID extends Eddystone {
       ]);
 }
 
-// * Below are resources for how the iBeacon advertising packet is structured
+// ! Below are resources for how the iBeacon advertising packet is structured
 // * https://support.kontakt.io/hc/en-gb/articles/201492492-iBeacon-advertising-packet-structure
 // * https://stackoverflow.com/questions/18906988/what-is-the-ibeacon-bluetooth-profile/19040616#19040616
 
@@ -142,47 +137,24 @@ class IBeacon extends Beacon {
       : super(tx: tx, scanResult: scanResult);
 
   factory IBeacon.fromScanResult(ScanResult scanResult) {
-
-
-    
     int manufacturerIdIndex = 0;
-    
+
     print("Scanning for iBeacon");
 
-    Int8List manuData = scanResult.advertisementData.manufacturerData;
+    Uint8List manuData = scanResult.advertisementData.manufacturerData;
 
-    print("iBeacon tx Power: " + scanResult.advertisementData.txPowerLevel.toString());
-
-    Map<String, Int8List> serviceData = scanResult.advertisementData.serviceData;
-    
-    manuData.forEach((int keys) {
-      print("Keys : " + keys.toString());
-     // print("Values : " + manuData[keys].toString());
-      // if(manuData[keys] == IBeaconManufacturerId) {
-      //   print("Hot Dog!");
-      // }
+    manuData.forEach((int values) {
+     // print("Values : " + values.toString());
+      if (values == IBeaconManufacturerId) {
+        print("iBeacon detected!");
+      }
     });
 
-    print("SERVICE DATA ");
-    serviceData.forEach((k,v) => print('${k}: ${v}')); 
+    // Find the index where the iBeacon manufacturer id is contained
+    manufacturerIdIndex = scanResult.advertisementData.manufacturerData
+        .indexWhere((value) => value == IBeaconManufacturerId);
+    print("Index of iBeacon manufacturer id: " + manufacturerIdIndex.toString());
 
-
-    if (!scanResult.advertisementData.serviceData
-        .containsKey(IBeaconManufacturerId)) {
-          
-      for (var k in scanResult.advertisementData.serviceData.keys) {
-        print(scanResult.advertisementData.localName);
-        print(k);
-        print(scanResult.advertisementData.serviceData[k]);
-        print(scanResult.advertisementData.manufacturerData);
-      }
-    } else {
-
-      // Find the index where the iBeacon manufacturer id is contained
-      manufacturerIdIndex = scanResult.advertisementData.manufacturerData
-          .indexWhere((value) => value == IBeaconManufacturerId);
-      print(manufacturerIdIndex);
-    }
     // ! Re-write statement to say " if the length of the whole list - length of list from where manufacturerIdIndex is to the end < 23"
     if (scanResult.advertisementData.manufacturerData.length -
             manufacturerIdIndex +
