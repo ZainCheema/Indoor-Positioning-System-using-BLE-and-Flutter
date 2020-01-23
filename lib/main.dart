@@ -171,7 +171,7 @@ class _MyHomePageState extends State<MyHomePage> {
         appBar: new AppBar(
           title: const Text('Umbrella Beacon Example'),
           actions: <Widget>[
-            IconButton(icon: Icon(Icons.clear), onPressed: _clearAllBeacons)
+            IconButton(icon: Icon(Icons.refresh), onPressed: _clearAllBeacons)
           ],
         ),
         floatingActionButton: _buildScanningButton(),

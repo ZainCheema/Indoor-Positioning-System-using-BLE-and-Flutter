@@ -137,51 +137,49 @@ class IBeacon extends Beacon {
       : super(tx: tx, scanResult: scanResult);
 
   factory IBeacon.fromScanResult(ScanResult scanResult) {
-    int manufacturerIdIndex = 0;
 
     print("Scanning for iBeacon");
 
     Uint8List manuData = scanResult.advertisementData.manufacturerData;
 
     manuData.forEach((int values) {
-     // print("Values : " + values.toString());
+     print("Values : " + values.toString());
       if (values == IBeaconManufacturerId) {
-        print("iBeacon detected!");
+        //print("iBeacon detected!");
       }
     });
 
     // Find the index where the iBeacon manufacturer id is contained
-    manufacturerIdIndex = scanResult.advertisementData.manufacturerData
+    int manufacturerIdIndex = scanResult.advertisementData.manufacturerData
         .indexWhere((value) => value == IBeaconManufacturerId);
     print("Index of iBeacon manufacturer id: " + manufacturerIdIndex.toString());
 
     // ! Re-write statement to say " if the length of the whole list - length of list from where manufacturerIdIndex is to the end < 23"
     if (scanResult.advertisementData.manufacturerData.length -
             manufacturerIdIndex +
-            1 <
+            2 <
         23) {
       return null;
     }
     // ! Re-write statement to say " if the first element in whole list after manufacturerIdIndex != 0x02"
     // ! Re-write statement to say " if the second element in whole list after manufacturerIdIndex != 0x15"
     if (scanResult
-                .advertisementData.manufacturerData[manufacturerIdIndex + 1] !=
+                .advertisementData.manufacturerData[manufacturerIdIndex + 2] !=
             0x02 ||
         scanResult
-                .advertisementData.manufacturerData[manufacturerIdIndex + 2] !=
+                .advertisementData.manufacturerData[manufacturerIdIndex + 3] !=
             0x15) {
       return null;
     }
 
-    print("iBeacon detected!");
-
     // ! You will need to get a sublist of the whole list using manufacturerIdIndex as a starting index
     List<int> rawBytes = scanResult.advertisementData.manufacturerData
         .sublist(manufacturerIdIndex);
-    var uuid = byteListToHexString(rawBytes.sublist(2, 18));
-    var major = twoByteToInt16(rawBytes[18], rawBytes[19]);
-    var minor = twoByteToInt16(rawBytes[20], rawBytes[21]);
-    var tx = byteToInt8(rawBytes[22]);
+    var uuid = byteListToHexString(rawBytes.sublist(4, 20));
+    var major = twoByteToInt16(rawBytes[20], rawBytes[21]);
+    var minor = twoByteToInt16(rawBytes[22], rawBytes[23]);
+    var tx = byteToInt8(rawBytes[24]);
+
     return IBeacon(
       uuid: uuid,
       major: major,
