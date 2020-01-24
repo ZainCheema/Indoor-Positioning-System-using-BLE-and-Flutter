@@ -11,13 +11,34 @@ class IBeaconCard extends StatelessWidget {
     return Card(
       child: Column(
         children: <Widget>[
-          Text("iBeacon"),
-          Text("uuid: ${iBeacon.uuid}"),
-          Text("major: ${iBeacon.major}"),
-          Text("minor: ${iBeacon.minor}"),
-          Text("tx: ${iBeacon.tx}"),
-          Text("rssi: ${iBeacon.rssi}"),
-          Text("distance: ${iBeacon.distance}"),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text("iBeacon"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text("uuid: ${iBeacon.uuid}"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text("major: ${iBeacon.major}"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text("minor: ${iBeacon.minor}"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text("tx: ${iBeacon.tx}"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text("rssi: ${iBeacon.rssi}"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text("distance: ${iBeacon.distance}"),
+          ),
         ],
       ),
     );

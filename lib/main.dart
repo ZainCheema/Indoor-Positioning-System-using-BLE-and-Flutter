@@ -166,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
     tiles.addAll(_buildScanResultTiles());
 
     return new MaterialApp(
-      themeMode: ThemeMode.dark,
+      theme: ThemeData.dark(),
       home: new Scaffold(
         appBar: new AppBar(
           title: const Text('Umbrella Beacon Example'),

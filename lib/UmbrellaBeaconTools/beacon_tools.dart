@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:convert/convert.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:umbrella/UmbrellaBeaconTools/umbrella_beacon.dart';
@@ -11,6 +10,8 @@ export 'package:flutter_ble_lib/flutter_ble_lib.dart' show ScanResult;
 
 const EddystoneServiceId = "0000feaa-0000-1000-8000-00805f9b34fb";
 const IBeaconManufacturerId = 0x004C;
+
+List<Beacon> beaconList = new List();
 
 abstract class Beacon {
   final int tx;
@@ -39,10 +40,25 @@ abstract class Beacon {
 
   // Returns the first found beacon protocol in one device
   static List<Beacon> fromScanResult(ScanResult scanResult) {
-    return <Beacon>[
-      //EddystoneUID.fromScanResult(scanResult),
-      IBeacon.fromScanResult(scanResult),
-    ].where((b) => b != null).toList();
+    // return <Beacon>[
+    //   //EddystoneUID.fromScanResult(scanResult),
+    //   IBeacon.fromScanResult(scanResult),
+    // ].where((b) => b != null).toList();
+
+    try {
+      beaconList.add(EddystoneUID.fromScanResult(scanResult));
+      beaconList.add(IBeacon.fromScanResult(scanResult));
+
+
+
+      return beaconList;
+
+    } on Exception catch(e) {
+        print("ERROR: " + e.toString());
+    }
+
+    return beaconList;
+
   }
 }
 
@@ -74,6 +90,10 @@ class EddystoneUID extends Eddystone {
 
   factory EddystoneUID.fromScanResult(ScanResult scanResult) {
     print("Scanning for Eddystone beacon");
+
+    if(scanResult.advertisementData.serviceData == null) {
+      return null;
+    }
 
     if (!scanResult.advertisementData.serviceData
         .containsKey(EddystoneServiceId)) {
