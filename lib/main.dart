@@ -1,11 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'dart:convert';
+import 'dart:math';
+import 'dart:io' show Platform;
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'widgets.dart';
 import 'UmbrellaBeaconTools/umbrella_beacon.dart';
 import 'package:beacon_broadcast/beacon_broadcast.dart';
+import 'package:uuid/uuid.dart';
+
+final _random = new Random();
 
 void main() => runApp(MyApp());
 
@@ -85,10 +89,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     _scanSubscription = umbrellaBeacon.scan(bleManager).listen((beacon) {
-      print('localName: ${beacon.scanResult.advertisementData.localName}');
-      print(
-          'manufacturerData: ${beacon.scanResult.advertisementData.manufacturerData}');
-      print('serviceData: ${beacon.scanResult.advertisementData.serviceData}');
       setState(() {
         beacons[beacon.hash] = beacon;
       });
@@ -188,6 +188,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
+
+int next(int min, int max) => min + _random.nextInt(max - min);
+
 startBeaconBroadcast() async {
   BeaconBroadcast beaconBroadcast = BeaconBroadcast();
 
@@ -200,12 +203,27 @@ startBeaconBroadcast() async {
       // ! EDDYSTONE DOESNT HAVE MAJOR & MINOR VALUES! IBEACON DOES! HENCE THE NO WORKING!
       // ! https://www.beaconzone.co.uk/choosinguuidmajorminor
       // ! https://github.com/google/eddystone/issues/188
-
-      beaconBroadcast
+      // TODO: (High Priority) Set unique UUID's for beacons, differentiate between platform
+     
+      if(Platform.isIOS) {
+         beaconBroadcast
           .setUUID('8b0ca750-e7a7-4e14-bd99-095477cb3e77')
           .setMajorId(1)
           .setMinorId(100)
           .start();
+      }
+
+    if(Platform.isAndroid) {
+      // ! Note: BeaconBroadcast doesnt have specific Eddystone methods,
+      // ! so setMajorId() is actually setting the beaconID.
+
+      // TODO: (Low Priority) Rename BroadcastBeacon methods to make more sense for a specific platform
+        beaconBroadcast
+          .setUUID(next(1, 99).toString())
+          .setMajorId(next(1, 99))
+          .setMinorId(100)
+          .start();
+    }
 
       beaconBroadcast.getAdvertisingStateChange().listen((isAdvertising) {
         print("Beacon is advertising");

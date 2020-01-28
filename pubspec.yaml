@@ -26,6 +26,7 @@ dependencies:
   flutter_ble_lib: 2.0.1
   beacon_broadcast: 0.2.1
   quiver: '>=2.0.0 <3.0.0'
+  uuid: 2.0.1
 
 dev_dependencies:
   flutter_test:

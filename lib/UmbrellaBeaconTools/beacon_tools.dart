@@ -40,22 +40,30 @@ abstract class Beacon {
 
   // Returns the first found beacon protocol in one device
   static List<Beacon> fromScanResult(ScanResult scanResult) {
+    print("Started peripheral scan");
     // return <Beacon>[
     //   //EddystoneUID.fromScanResult(scanResult),
     //   IBeacon.fromScanResult(scanResult),
     // ].where((b) => b != null).toList();
 
     try {
-      beaconList.add(EddystoneUID.fromScanResult(scanResult));
-      beaconList.add(IBeacon.fromScanResult(scanResult));
+      EddystoneUID eddystoneBeacon = EddystoneUID.fromScanResult(scanResult);
+      if(eddystoneBeacon != null) {
+        beaconList.add(eddystoneBeacon);
+      }
 
+      IBeacon iBeacon = IBeacon.fromScanResult(scanResult);
+      if(iBeacon != null) {
+        beaconList.add(iBeacon);
+      }
 
-
-      return beaconList;
-
+      //beaconList.add(EddystoneUID.fromScanResult(scanResult));
+      //beaconList.add(IBeacon.fromScanResult(scanResult));
     } on Exception catch(e) {
         print("ERROR: " + e.toString());
     }
+
+    print("BeaconList length: " + beaconList.length.toString());
 
     return beaconList;
 
@@ -113,13 +121,13 @@ class EddystoneUID extends Eddystone {
     List<int> rawBytes =
         scanResult.advertisementData.serviceData[EddystoneServiceId];
     var frameType = rawBytes[0];
-    print("frameType = " + frameType.toString());
+    print("frameType: " + frameType.toString());
     var tx = byteToInt8(rawBytes[1]);
-    print("tx power = " + tx.toString());
+    print("tx power: " + tx.toString());
     var namespaceId = byteListToHexString(rawBytes.sublist(2, 12));
-    print("namespace id = " + namespaceId);
+    print("namespace id: " + namespaceId);
     var beaconId = byteListToHexString(rawBytes.sublist(12, 18));
-    print("beacon id = " + beaconId);
+    print("beacon id: " + beaconId);
 
     return EddystoneUID(
         frameType: frameType,
@@ -162,12 +170,9 @@ class IBeacon extends Beacon {
 
     Uint8List manuData = scanResult.advertisementData.manufacturerData;
 
-    manuData.forEach((int values) {
-     print("Values : " + values.toString());
-      if (values == IBeaconManufacturerId) {
-        //print("iBeacon detected!");
-      }
-    });
+    if(manuData == null) {
+      return null;
+    }
 
     // Find the index where the iBeacon manufacturer id is contained
     int manufacturerIdIndex = scanResult.advertisementData.manufacturerData
@@ -196,9 +201,13 @@ class IBeacon extends Beacon {
     List<int> rawBytes = scanResult.advertisementData.manufacturerData
         .sublist(manufacturerIdIndex);
     var uuid = byteListToHexString(rawBytes.sublist(4, 20));
+    print("uuid: " + uuid);
     var major = twoByteToInt16(rawBytes[20], rawBytes[21]);
+    print("major: " + major.toString());
     var minor = twoByteToInt16(rawBytes[22], rawBytes[23]);
+    print("minor: " + minor.toString());
     var tx = byteToInt8(rawBytes[24]);
+    print("tx power: " + tx.toString());
 
     return IBeacon(
       uuid: uuid,

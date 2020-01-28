@@ -55,12 +55,30 @@ class EddystoneUIDCard extends StatelessWidget {
     return Card(
       child: Column(
         children: <Widget>[
-          Text("EddystoneUID"),
-          Text("beaconId: ${eddystoneUID.beaconId}"),
-          Text("namespaceId: ${eddystoneUID.namespaceId}"),
-          Text("tx: ${eddystoneUID.tx}"),
-          Text("rssi: ${eddystoneUID.rssi}"),
-          Text("distance: ${eddystoneUID.distance}"),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text("EddystoneUID"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text("beaconId: ${eddystoneUID.beaconId}"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text("namespaceId: ${eddystoneUID.namespaceId}"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text("tx: ${eddystoneUID.tx}"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text("rssi: ${eddystoneUID.rssi}"),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(4.0),
+            child: Text("distance: ${eddystoneUID.distance}"),
+          ),
         ],
       ),
     );
