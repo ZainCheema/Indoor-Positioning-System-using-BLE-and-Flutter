@@ -41,10 +41,6 @@ abstract class Beacon {
   // Returns the first found beacon protocol in one device
   static List<Beacon> fromScanResult(ScanResult scanResult) {
     print("Started peripheral scan");
-    // return <Beacon>[
-    //   //EddystoneUID.fromScanResult(scanResult),
-    //   IBeacon.fromScanResult(scanResult),
-    // ].where((b) => b != null).toList();
 
     try {
       EddystoneUID eddystoneBeacon = EddystoneUID.fromScanResult(scanResult);
@@ -57,8 +53,6 @@ abstract class Beacon {
         beaconList.add(iBeacon);
       }
 
-      //beaconList.add(EddystoneUID.fromScanResult(scanResult));
-      //beaconList.add(IBeacon.fromScanResult(scanResult));
     } on Exception catch(e) {
         print("ERROR: " + e.toString());
     }

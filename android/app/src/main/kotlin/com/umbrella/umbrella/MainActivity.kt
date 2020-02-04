@@ -1,4 +1,4 @@
-package com.example.umbrella
+package com.umbrella.umbrella
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

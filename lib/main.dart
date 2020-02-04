@@ -189,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 
-int next(int min, int max) => min + _random.nextInt(max - min);
+int randomNumber(int min, int max) => min + _random.nextInt(max - min);
 
 startBeaconBroadcast() async {
   BeaconBroadcast beaconBroadcast = BeaconBroadcast();
@@ -219,8 +219,8 @@ startBeaconBroadcast() async {
 
       // TODO: (Low Priority) Rename BroadcastBeacon methods to make more sense for a specific platform
         beaconBroadcast
-          .setUUID(next(1, 99).toString())
-          .setMajorId(next(1, 99))
+          .setUUID(randomNumber(1, 99).toString())
+          .setMajorId(randomNumber(1, 99))
           .setMinorId(100)
           .start();
     }
