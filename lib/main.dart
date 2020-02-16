@@ -7,6 +7,7 @@ import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'widgets.dart';
 import 'UmbrellaBeaconTools/umbrella_beacon.dart';
 import 'package:beacon_broadcast/beacon_broadcast.dart';
+import 'package:random_words/random_words.dart';
 import 'package:uuid/uuid.dart';
 
 final _random = new Random();
@@ -53,6 +54,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
+
+    generateWordPairs().take(5).forEach(print);
 
     bleManager.createClient();
 

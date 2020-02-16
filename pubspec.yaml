@@ -29,6 +29,7 @@ dependencies:
   uuid: 2.0.1
   firebase_core: ^0.4.0+9
   cloud_firestore: ^0.12.9+5
+  random_words: ^1.0.2
 
 dev_dependencies:
   flutter_test:
