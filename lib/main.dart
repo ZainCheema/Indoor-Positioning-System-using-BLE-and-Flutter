@@ -1,16 +1,16 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'dart:math';
+import 'UmbrellaBeaconTools/utils.dart';
 import 'dart:io' show Platform;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'widgets.dart';
 import 'UmbrellaBeaconTools/umbrella_beacon.dart';
 import 'package:beacon_broadcast/beacon_broadcast.dart';
 import 'package:random_words/random_words.dart';
-import 'package:uuid/uuid.dart';
 
-final _random = new Random();
+var firestoreReference = Firestore.instance;
 
 void main() => runApp(MyApp());
 
@@ -55,7 +55,14 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    generateWordPairs().take(5).forEach(print);
+    Iterable<WordPair> userNames = generateWordPairs().take(5);
+
+    for (int i = 0; i < userNames.length; i++) {
+      firestoreReference
+          .collection('User')
+          .document(userNames.elementAt(i).toString())
+          .setData(({"Person": "Added"}));
+    }
 
     bleManager.createClient();
 
@@ -87,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
   _startScan() {
     print("Scanning now");
 
-    if(bleManager == null || umbrellaBeacon == null) {
+    if (bleManager == null || umbrellaBeacon == null) {
       print('BleManager is null!!!');
     }
 
@@ -191,9 +198,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-
-int randomNumber(int min, int max) => min + _random.nextInt(max - min);
-
 startBeaconBroadcast() async {
   BeaconBroadcast beaconBroadcast = BeaconBroadcast();
 
@@ -207,26 +211,26 @@ startBeaconBroadcast() async {
       // ! https://www.beaconzone.co.uk/choosinguuidmajorminor
       // ! https://github.com/google/eddystone/issues/188
       // TODO: (High Priority) Set unique UUID's for beacons, differentiate between platform
-     
-      if(Platform.isIOS) {
-         beaconBroadcast
-          .setUUID('8b0ca750-e7a7-4e14-bd99-095477cb3e77')
-          .setMajorId(1)
-          .setMinorId(100)
-          .start();
+
+      if (Platform.isIOS) {
+        beaconBroadcast
+            .setUUID('8b0ca750-e7a7-4e14-bd99-095477cb3e77')
+            .setMajorId(1)
+            .setMinorId(100)
+            .start();
       }
 
-    if(Platform.isAndroid) {
-      // ! Note: BeaconBroadcast doesnt have specific Eddystone methods,
-      // ! so setMajorId() is actually setting the beaconID.
+      if (Platform.isAndroid) {
+        // ! Note: BeaconBroadcast doesnt have specific Eddystone methods,
+        // ! so setMajorId() is actually setting the beaconID.
 
-      // TODO: (Low Priority) Rename BroadcastBeacon methods to make more sense for a specific platform
+        // TODO: (Low Priority) Rename BroadcastBeacon methods to make more sense for a specific platform
         beaconBroadcast
-          .setUUID(randomNumber(1, 99).toString())
-          .setMajorId(randomNumber(1, 99))
-          .setMinorId(100)
-          .start();
-    }
+            .setUUID(randomNumber(1, 99).toString())
+            .setMajorId(randomNumber(1, 99))
+            .setMinorId(100)
+            .start();
+      }
 
       beaconBroadcast.getAdvertisingStateChange().listen((isAdvertising) {
         print("Beacon is advertising");
