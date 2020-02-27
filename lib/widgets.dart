@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'UmbrellaBeaconTools/beacon_tools.dart';
+import 'Model/PostModel.dart';
 
 class IBeaconCard extends StatelessWidget {
   final IBeacon iBeacon;
@@ -83,4 +86,58 @@ class EddystoneUIDCard extends StatelessWidget {
       ),
     );
   }
+}
+
+class PostCard extends StatelessWidget {
+
+  final Post post;
+
+  PostCard({@required this.post});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.all(18.0),
+      child: Container(
+        decoration: new BoxDecoration(
+          borderRadius: new BorderRadius.circular(80.0)
+        ),
+        child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                alignment: Alignment.topLeft,
+                child: Text(post.userName)
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Center(
+                child: Text(post.postText,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20
+                    )
+                )
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  Text(post.distance.toString()),
+                  Text(post.angleFacing.toString()),
+                ],
+              ),
+            ),
+          ]
+        )
+      )
+    );
+  }
+
+
+
 }

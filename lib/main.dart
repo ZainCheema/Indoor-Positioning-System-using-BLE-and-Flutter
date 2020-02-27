@@ -1,10 +1,12 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:umbrella/View/NearbyScreen.dart';
 import 'UmbrellaBeaconTools/utils.dart';
 import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'Model/PostModel.dart';
 import 'widgets.dart';
 import 'UmbrellaBeaconTools/umbrella_beacon.dart';
 import 'package:beacon_broadcast/beacon_broadcast.dart';
@@ -14,17 +16,65 @@ var firestoreReference = Firestore.instance;
 
 void main() => runApp(MyApp());
 
+PostCard postCard = PostCard(post: Post("Dont you love when i come around? This feels like summer, just be my lover, boy you lead me to paradise", "nananaonsha", 90, 90));
+
+var dummyPosts = new List<PostCard>.filled(50, postCard);
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Umbrella Demo',
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      themeMode: ThemeMode.dark,
-      home: MyHomePage(title: 'Umbrella Demo Home Page'),
-    );
+        title: 'Umbrella',
+        theme: ThemeData(
+          primarySwatch: Colors.brown,
+        ),
+        themeMode: ThemeMode.dark,
+        //home: MyHomePage(title: 'Umbrella Demo Home Page'),
+        home: BottomNav());
+  }
+}
+
+class BottomNav extends StatefulWidget {
+  @override
+  BottomNavState createState() {
+    return BottomNavState();
+  }
+}
+
+class BottomNavState extends State<BottomNav> {
+    int _selectedIndex = 0;
+  static List<Widget> _widgetOptions = <Widget>[
+    MyHomePage(title: "Umbrella Demo"),
+    NearbyScreen(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        body: Center(
+          child: _widgetOptions.elementAt(_selectedIndex),
+        ),
+        bottomNavigationBar: BottomNavigationBar(
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              title: Text('Feed'),
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.people),
+              title: Text('Nearby'),
+            ),
+          ],
+          currentIndex: _selectedIndex,
+          selectedItemColor: Colors.black,
+          onTap: _onItemTapped,
+        ));
   }
 }
 
@@ -173,13 +223,18 @@ class _MyHomePageState extends State<MyHomePage> {
       tiles.add(_buildAlertTile());
     }
 
+    for(int i = 0; i < dummyPosts.length; i++) {
+      tiles.add(dummyPosts[i]);
+
+    }
+
     tiles.addAll(_buildScanResultTiles());
 
     return new MaterialApp(
-      theme: ThemeData.dark(),
+      //theme: ThemeData.dark(),
       home: new Scaffold(
         appBar: new AppBar(
-          title: const Text('Umbrella Beacon Example'),
+          title: const Text('Umbrella'),
           actions: <Widget>[
             IconButton(icon: Icon(Icons.refresh), onPressed: _clearAllBeacons)
           ],
