@@ -1,0 +1,21 @@
+1a, If Bluetooth isnt on, prompt
+
+1b, If Wifi isnt on, prompt
+
+1c If location isnt on, prompt
+
+2 Generate random name, uuid, add details to cloud firestore
+
+3 Scan for bluetooth devices, if the uuid matches one stored in firestore,
+
+then its a user
+
+4 Each user has a list of users associated with them in firestore
+
+
+
+
+
+
+
+

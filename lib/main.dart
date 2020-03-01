@@ -2,11 +2,14 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:umbrella/View/NearbyScreen.dart';
-import 'UmbrellaBeaconTools/utils.dart';
+import 'package:umbrella/View/NewPostScreen.dart';
+import 'utils.dart';
 import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'Model/PostModel.dart';
+import 'package:geolocator/geolocator.dart';
+import 'package:flutter_compass/flutter_compass.dart';
 import 'widgets.dart';
 import 'UmbrellaBeaconTools/umbrella_beacon.dart';
 import 'package:beacon_broadcast/beacon_broadcast.dart';
@@ -18,7 +21,7 @@ void main() => runApp(MyApp());
 
 PostCard postCard = PostCard(post: Post("Dont you love when i come around? This feels like summer, just be my lover, boy you lead me to paradise", "nananaonsha", 90, 90));
 
-var dummyPosts = new List<PostCard>.filled(50, postCard);
+var dummyPosts = new List<PostCard>.filled(5, postCard);
 
 class MyApp extends StatelessWidget {
   @override
@@ -26,7 +29,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
         title: 'Umbrella',
         theme: ThemeData(
-          primarySwatch: Colors.brown,
+          primarySwatch: Colors.blue,
         ),
         themeMode: ThemeMode.dark,
         //home: MyHomePage(title: 'Umbrella Demo Home Page'),
@@ -180,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
     } else {
       return new FloatingActionButton(
-          child: new Icon(Icons.search), onPressed: _startScan);
+          child: new Icon(Icons.add), onPressed: _startScan);
     }
   }
 
@@ -231,25 +234,64 @@ class _MyHomePageState extends State<MyHomePage> {
     tiles.addAll(_buildScanResultTiles());
 
     return new MaterialApp(
-      //theme: ThemeData.dark(),
+      theme: buildThemeData(),
       home: new Scaffold(
         appBar: new AppBar(
-          title: const Text('Umbrella'),
+          centerTitle: true,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text('Umbrella'),
+              const Image(image: AssetImage('assets/icons8-umbrella-24.png'))
+            ],
+          ),
           actions: <Widget>[
-            IconButton(icon: Icon(Icons.refresh), onPressed: _clearAllBeacons)
+            IconButton(icon: Icon(Icons.message), onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => NewPostScreen())
+              );
+            })
           ],
         ),
         floatingActionButton: _buildScanningButton(),
-        body: new Stack(
+        body: new Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             (isScanning) ? _buildProgressBarTile() : new Container(),
-            new ListView(
+            new SubtitleBar(location: "Cottingham Road", userNumber: "5"),
+            Expanded(
+              child: new ListView(
               children: tiles,
+              ),
             )
           ],
         ),
       ),
     );
+  }
+}
+
+getUserStreet() async {
+  Position location = getUserLocation();
+  if(getUserLocation() != null) {
+        List<Placemark> placemark =
+        await Geolocator().placemarkFromCoordinates(location.latitude, location.longitude);
+
+    String country = placemark[0].country;
+    String postcode = placemark[0].postalCode;
+    String street = placemark[0].thoroughfare;
+
+    debugPrint("Current Postcode: " + postcode);
+
+    var split = postcode.split(" ");
+
+    var first = split[1];
+
+    var second = first.split("");
+
+    postcode = split[0] + " " + second[0];
   }
 }
 

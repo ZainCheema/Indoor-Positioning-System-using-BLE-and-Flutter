@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:umbrella/UmbrellaBeaconTools/umbrella_beacon.dart';
 import 'dart:math';
-import 'package:umbrella/UmbrellaBeaconTools/utils.dart';
+import 'package:umbrella/utils.dart';
 import 'package:quiver/core.dart';
 export 'package:flutter_ble_lib/flutter_ble_lib.dart' show ScanResult;
 

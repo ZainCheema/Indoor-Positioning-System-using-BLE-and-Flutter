@@ -1,6 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
+import 'utils.dart';
 import 'UmbrellaBeaconTools/beacon_tools.dart';
 import 'Model/PostModel.dart';
 
@@ -88,6 +87,56 @@ class EddystoneUIDCard extends StatelessWidget {
   }
 }
 
+ThemeData buildThemeData() {
+  return ThemeData(
+      // Add the hex (#) of the colour you want and append
+      // 0xFF to it
+        primarySwatch: createMaterialColor(Color(0xFFE8E6D9))
+      );
+  }
+
+class SubtitleBar extends StatelessWidget {
+
+  final String location;
+  final String userNumber;
+
+  SubtitleBar({@required this.location, @required this.userNumber});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      decoration: BoxDecoration(
+        border: Border(
+          bottom: BorderSide(
+            color: Colors.black
+          )
+        )
+      ),
+      child:
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(location,
+                  style: subtitleTextStyle,
+                ),
+                Text(userNumber + " users nearby",
+                  style: subtitleTextStyle,
+                  ),
+                ],
+              ),
+            ),
+    );
+  }
+
+  final TextStyle subtitleTextStyle = TextStyle(
+    fontSize: 17
+  );
+
+}
+
 class PostCard extends StatelessWidget {
 
   final Post post;
@@ -96,29 +145,29 @@ class PostCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: EdgeInsets.all(18.0),
-      child: Container(
-        decoration: new BoxDecoration(
-          borderRadius: new BorderRadius.circular(80.0)
-        ),
-        child: Column(
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Align(
-                alignment: Alignment.topLeft,
-                child: Text(post.userName)
-              ),
+        return Card(
+          margin: EdgeInsets.all(18.0),
+          child: Container(
+            decoration: new BoxDecoration(
+              borderRadius: new BorderRadius.circular(80.0)
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Center(
-                child: Text(post.postText,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20
-                    )
+            child: Column(
+              children: <Widget>[
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(post.userName)
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Center(
+                    child: Text(post.postText,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20
+                  )
                 )
               ),
             ),
