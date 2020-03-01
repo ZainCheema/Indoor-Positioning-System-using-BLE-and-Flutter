@@ -1,24 +1,38 @@
+// Help:
+// https://medium.com/flutter/some-options-for-deserializing-json-with-flutter-7481325a4450
+
+import 'UserModel.dart';
+import 'CommentModel.dart';
+
 class Post {
-  String postText;
-  String userName;
-  double angleFacing;
-  double distance;
+  const Post({this.user, this.postID, this.postText, this.comments});
 
-  Post(this.postText, this.userName, this.angleFacing, this.distance);
+  final User user;
+  final String postID;
+  final String postText;
+  final List<Comment> comments;
 
+  factory Post.fromJson(Map<dynamic, dynamic> json) {
+    
+    List<Comment> populateComments(Map commentsObj) {
+      List<Comment> comments;
+      commentsObj.forEach((key, values) {
+        comments.add(Comment.fromJson(values));
+      });
+      return comments;
+    }
 
-  Post.fromJson(Map<dynamic, dynamic> json):
-    postText = json['PostText'].toString(),
-    userName = json['UserName'].toString(),
-    angleFacing = json['AngleFacing'].toDouble(),
-    distance = json['Distance'].toDouble();
+    return Post(
+        user: User.fromJson(json['User']),
+        postID: json['PostID'].toString(),
+        postText: json['PostText'].toString(),
+        comments: populateComments(json['Comments']));
+  }
 
-
-   Map<dynamic, dynamic> toJson() =>  {
-   'PostText' : postText,
-   'UserName' : userName,
-   'AngleFacing' : angleFacing,
-   'Distance' : distance
- };
-
+  Map<dynamic, dynamic> toJson() => {
+        'User': user,
+        'PostID': postID,
+        'PostText': postText,
+        'Comments': comments,
+      };
 }
