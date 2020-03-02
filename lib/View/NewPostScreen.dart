@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:umbrella/widgets.dart';
+
+import '../styles.dart';
 
 class NewPostScreen extends StatelessWidget {
   @override

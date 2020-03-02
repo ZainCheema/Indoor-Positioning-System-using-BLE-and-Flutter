@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'utils.dart';
 import 'UmbrellaBeaconTools/beacon_tools.dart';
 import 'Model/PostModel.dart';
 
@@ -86,14 +85,6 @@ class EddystoneUIDCard extends StatelessWidget {
     );
   }
 }
-
-ThemeData buildThemeData() {
-  return ThemeData(
-      // Add the hex (#) of the colour you want and append
-      // 0xFF to it
-        primarySwatch: createMaterialColor(Color(0xFFE8E6D9))
-      );
-  }
 
 class SubtitleBar extends StatelessWidget {
 
@@ -186,7 +177,4 @@ class PostCard extends StatelessWidget {
       )
     );
   }
-
-
-
 }

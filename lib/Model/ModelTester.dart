@@ -1,8 +1,4 @@
-import 'package:umbrella/main.dart';
-
-import 'UserModel.dart';
 import 'PostModel.dart';
-import 'CommentModel.dart';
 import 'package:umbrella/utils.dart';
 import 'package:umbrella/widgets.dart';
 
@@ -61,8 +57,6 @@ class ModelTester {
       dummyPostCards.add(PostCard(post: Post.fromJson(dummyPostJson)));
     }
 
-
-      return dummyPostCards;
-
+    return dummyPostCards;
   }
 }

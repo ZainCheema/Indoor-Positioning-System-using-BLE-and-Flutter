@@ -1,7 +1,6 @@
 // Help:
 // https://medium.com/flutter/some-options-for-deserializing-json-with-flutter-7481325a4450
 
-
 class User {
   const User({this.userName, this.uuid});
 
