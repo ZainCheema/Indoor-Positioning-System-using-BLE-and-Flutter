@@ -157,7 +157,7 @@ class PostCard extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   child: Align(
                     alignment: Alignment.topLeft,
-                    child: Text(post.userName)
+                    child: Text(post.user.userName)
                   ),
                 ),
                 Padding(
@@ -176,8 +176,8 @@ class PostCard extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  Text(post.distance.toString()),
-                  Text(post.angleFacing.toString()),
+                  Text('0'),
+                  Text('0'),
                 ],
               ),
             ),

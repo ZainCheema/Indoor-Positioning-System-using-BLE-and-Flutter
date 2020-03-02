@@ -12,13 +12,12 @@ class Post {
   final String postText;
   final List<Comment> comments;
 
-  factory Post.fromJson(Map<dynamic, dynamic> json) {
+  factory Post.fromJson(var json) {
     
-    List<Comment> populateComments(Map commentsObj) {
-      List<Comment> comments;
-      commentsObj.forEach((key, values) {
-        comments.add(Comment.fromJson(values));
-      });
+    List<Comment> populateComments(List<Map<dynamic, dynamic>>  commentsObj) {
+      List<Comment> comments = new List<Comment>();
+      commentsObj.forEach((json) =>
+        comments.add(Comment.fromJson(json)));
       return comments;
     }
 
@@ -26,7 +25,8 @@ class Post {
         user: User.fromJson(json['User']),
         postID: json['PostID'].toString(),
         postText: json['PostText'].toString(),
-        comments: populateComments(json['Comments']));
+        comments: populateComments(json['Comments'])
+    );
   }
 
   Map<dynamic, dynamic> toJson() => {

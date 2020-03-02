@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:umbrella/main.dart';
-import 'package:umbrella/utils.dart';
 import 'package:umbrella/widgets.dart';
 
 class NewPostScreen extends StatelessWidget {

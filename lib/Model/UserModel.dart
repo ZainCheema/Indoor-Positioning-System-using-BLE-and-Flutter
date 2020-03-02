@@ -5,7 +5,6 @@
 class User {
   const User({this.userName, this.uuid});
 
-
   final String userName;
   final String uuid;
   //final Map<User, double> nearbyUsers;

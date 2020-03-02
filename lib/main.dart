@@ -14,14 +14,16 @@ import 'widgets.dart';
 import 'UmbrellaBeaconTools/umbrella_beacon.dart';
 import 'package:beacon_broadcast/beacon_broadcast.dart';
 import 'package:random_words/random_words.dart';
+import 'Model/ModelTester.dart';
 
 var firestoreReference = Firestore.instance;
 
 void main() => runApp(MyApp());
 
-PostCard postCard = PostCard(post: Post("Dont you love when i come around? This feels like summer, just be my lover, boy you lead me to paradise", "nananaonsha", 90, 90));
+//PostCard postCard = PostCard(post: Post.fromJson(ModelTester.dummyPostJson));
 
-var dummyPosts = new List<PostCard>.filled(5, postCard);
+List<PostCard> dummyPostCards = ModelTester.generateDummyPosts(5);
+
 
 class MyApp extends StatelessWidget {
   @override
@@ -226,8 +228,8 @@ class _MyHomePageState extends State<MyHomePage> {
       tiles.add(_buildAlertTile());
     }
 
-    for(int i = 0; i < dummyPosts.length; i++) {
-      tiles.add(dummyPosts[i]);
+    for(int i = 0; i < dummyPostCards.length; i++) {
+      tiles.add(dummyPostCards[i]);
 
     }
 
