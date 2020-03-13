@@ -19,8 +19,6 @@ String byteListToHexString(List<int> bytes) => bytes
     .map((i) => i.toRadixString(16).padLeft(2, '0'))
     .reduce((a, b) => (a + b));
 
-
-
 getUserLocation() async {
   return await Geolocator()
       .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
@@ -28,6 +26,5 @@ getUserLocation() async {
     if (location != null) {
       debugPrint("Location: ${location.latitude},${location.longitude}");
     }
-    
   });
 }

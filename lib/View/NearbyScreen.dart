@@ -149,21 +149,21 @@ class NearbyScreenState extends State<NearbyScreen> {
     tiles.addAll(_buildScanResultTiles());
 
     return Scaffold(
-        floatingActionButton: _buildScanningButton(),
-        body: new Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            (isScanning) ? _buildProgressBarTile() : new Container(),
-            new SubtitleBar(location: "Cottingham Road", userNumber: "5"),
-            Expanded(
-              child: new ListView(
-                children: tiles,
-              ),
-            )
-          ],
-        ),
-      );
+      floatingActionButton: _buildScanningButton(),
+      body: new Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          (isScanning) ? _buildProgressBarTile() : new Container(),
+          new SubtitleBar(location: "Cottingham Road", userNumber: "5"),
+          Expanded(
+            child: new ListView(
+              children: tiles,
+            ),
+          )
+        ],
+      ),
+    );
   }
 }
 

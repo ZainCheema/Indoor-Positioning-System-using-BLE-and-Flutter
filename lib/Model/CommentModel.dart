@@ -6,7 +6,7 @@ class Comment {
 
   const Comment({this.user, this.postID, this.commentText, this.commentId, this.upvotes});
   
-  // The user of the comment
+  // The user who made the comment
   final User user;
   // The post they are commenting on
   final String postID;

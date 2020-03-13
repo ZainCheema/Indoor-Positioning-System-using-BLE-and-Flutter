@@ -1,13 +1,11 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:umbrella/UmbrellaMain.dart'; 
+import 'package:umbrella/UmbrellaMain.dart';
 import 'Model/AppStateModel.dart';
 import 'package:flutter/cupertino.dart';
 
-
 void main() {
-
   WidgetsFlutterBinding.ensureInitialized();
 
   SystemChrome.setPreferredOrientations(
@@ -16,7 +14,7 @@ void main() {
   return runApp(
     ChangeNotifierProvider<AppStateModel>(
       create: (context) => AppStateModel(),
-      child: UmbrellaMain(),              
+      child: UmbrellaMain(),
     ),
   );
 }

@@ -87,7 +87,6 @@ class EddystoneUIDCard extends StatelessWidget {
 }
 
 class SubtitleBar extends StatelessWidget {
-
   final String location;
   final String userNumber;
 
@@ -98,83 +97,67 @@ class SubtitleBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(8.0),
       decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(
-            color: Colors.black
-          )
-        )
-      ),
-      child:
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(location,
-                  style: subtitleTextStyle,
-                ),
-                Text(userNumber + " users nearby",
-                  style: subtitleTextStyle,
-                  ),
-                ],
-              ),
+          border: Border(bottom: BorderSide(color: Colors.black))),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Text(
+              location,
+              style: subtitleTextStyle,
             ),
+            Text(
+              userNumber + " users nearby",
+              style: subtitleTextStyle,
+            ),
+          ],
+        ),
+      ),
     );
   }
 
-  final TextStyle subtitleTextStyle = TextStyle(
-    fontSize: 17
-  );
-
+  final TextStyle subtitleTextStyle = TextStyle(fontSize: 17);
 }
 
 class PostCard extends StatelessWidget {
-
   final Post post;
 
   PostCard({@required this.post});
 
   @override
   Widget build(BuildContext context) {
-        return Card(
-          margin: EdgeInsets.all(18.0),
-          child: Container(
+    return Card(
+        margin: EdgeInsets.all(18.0),
+        child: Container(
             decoration: new BoxDecoration(
-              borderRadius: new BorderRadius.circular(80.0)
-            ),
-            child: Column(
-              children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Align(
+                borderRadius: new BorderRadius.circular(80.0)),
+            child: Column(children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Align(
                     alignment: Alignment.topLeft,
-                    child: Text(post.user.userName)
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Center(
+                    child: Text(post.user.userName)),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
                     child: Text(post.postText,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20
-                  )
-                )
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold, fontSize: 20))),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Text('0'),
-                  Text('0'),
-                ],
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text(post.user.distance.toString()),
+                    Text(post.user.direction.toString()),
+                  ],
+                ),
               ),
-            ),
-          ]
-        )
-      )
-    );
+            ])));
   }
 }
+
+

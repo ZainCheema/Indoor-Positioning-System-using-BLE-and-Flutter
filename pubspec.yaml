@@ -33,6 +33,7 @@ dependencies:
   flutter_compass: ^0.3.6
   geolocator: ^5.0.3
   provider: 4.0.4
+  rxdart: ^0.23.1
 
 dev_dependencies:
   flutter_test:

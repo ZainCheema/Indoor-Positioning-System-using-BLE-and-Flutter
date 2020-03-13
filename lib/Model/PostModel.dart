@@ -5,27 +5,27 @@ import 'UserModel.dart';
 import 'CommentModel.dart';
 
 class Post {
-  const Post({this.user, this.postID, this.postText, this.comments});
+  const Post({this.user, this.postID, this.postText, /*this.comments*/});
 
   final User user;
   final String postID;
   final String postText;
-  final List<Comment> comments;
+  //final List<Comment> comments;
 
   factory Post.fromJson(var json) {
     
-    List<Comment> populateComments(List<Map<dynamic, dynamic>>  commentsObj) {
-      List<Comment> comments = new List<Comment>();
-      commentsObj.forEach((json) =>
-        comments.add(Comment.fromJson(json)));
-      return comments;
-    }
+    // List<Comment> populateComments(List<Map<dynamic, dynamic>>  commentsObj) {
+    //   List<Comment> comments = new List<Comment>();
+    //   commentsObj.forEach((json) =>
+    //     comments.add(Comment.fromJson(json)));
+    //   return comments;
+    // }
 
     return Post(
         user: User.fromJson(json['User']),
-        postID: json['PostID'].toString(),
         postText: json['PostText'].toString(),
-        comments: populateComments(json['Comments'])
+        postID: json['PostID'].toString(),
+        //comments: populateComments(json['Comments'])
     );
   }
 
@@ -33,6 +33,6 @@ class Post {
         'User': user,
         'PostID': postID,
         'PostText': postText,
-        'Comments': comments,
+        //'Comments': comments,
       };
 }

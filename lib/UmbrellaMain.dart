@@ -1,17 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:umbrella/View/FeedScreen.dart';
 import 'package:umbrella/View/NearbyScreen.dart';
-import 'package:umbrella/View/NewPostScreen.dart';
 import 'package:umbrella/styles.dart';
-
 
 class UmbrellaMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        title: 'Umbrella',
-        home: BottomNav());
+    return MaterialApp(title: 'Umbrella', home: BottomNav());
   }
 }
 
@@ -44,19 +39,13 @@ class BottomNavState extends State<BottomNav> {
           title: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              const Text('Umbrella', 
-                style: TextStyle(color: Colors.black),),
+              const Text(
+                'Umbrella',
+                style: TextStyle(color: Colors.black),
+              ),
               const Image(image: AssetImage('assets/icons8-umbrella-24.png'))
             ],
           ),
-          actions: <Widget>[
-            IconButton(
-                icon: Icon(Icons.message, color: Colors.black),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => NewPostScreen()));
-                })
-          ],
         ),
         body: Center(
           child: _widgetOptions.elementAt(_selectedIndex),
