@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:umbrella/Model/UserModel.dart';
 import 'package:uuid/uuid.dart';
 
+// Timestamp help:
+// https://stackoverflow.com/questions/50632217/dart-flutter-converting-timestamp
+
 TextEditingController textEditingController = new TextEditingController();
 
 newPostDialog(BuildContext context, User user, CollectionReference postPath) async {
@@ -21,8 +24,7 @@ newPostDialog(BuildContext context, User user, CollectionReference postPath) asy
                 new FlatButton(
                   child: new Icon(Icons.send, color: Colors.black,),
                   onPressed: () {
-                    Uuid uuid = new Uuid();
-                    String postId = uuid.v1().toString();
+                    String postId = Timestamp.now().toDate().toString();
 
                     String postText = textEditingController.text;
 
@@ -32,6 +34,7 @@ newPostDialog(BuildContext context, User user, CollectionReference postPath) asy
                       'PostText': postText
                     });
 
+                    textEditingController.text = '';
                     textEditingController.clearComposing();
 
                     Navigator.of(context).pop();

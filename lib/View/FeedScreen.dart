@@ -2,10 +2,12 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:random_words/random_words.dart';
 import 'package:umbrella/Model/PostModel.dart';
 import 'package:umbrella/Model/UserModel.dart';
 import 'package:umbrella/View/NewPostDialog.dart';
+import 'package:umbrella/utils.dart';
 import 'package:umbrella/widgets.dart';
 import 'package:uuid/uuid.dart';
 
@@ -17,7 +19,13 @@ import '../styles.dart';
 Firestore firestoreReference = Firestore.instance;
 Uuid uuid = new Uuid();
 
-List<PostCard> dummyPostCards = new List<PostCard>();
+List<Placemark> location = new List<Placemark>();
+
+String country;
+String postcode;
+String street = "";
+
+String usersNumber = "";
 
 StreamSubscription postStream;
 
@@ -36,6 +44,7 @@ CollectionReference postPath = firestoreReference
     .collection('Post');
 
 Future<QuerySnapshot> getAllPosts() {
+  postPath.orderBy('asc');
   return firestoreReference.collection(postPath.path).getDocuments();
 }
 
@@ -50,6 +59,31 @@ User user = User.fromJson(userJson);
 
 void createUserRecord(User pUser) async {
   await userPath.add({'UUID': pUser.uuid, 'UserName': pUser.userName});
+  getCountryCityStreet().then((userLocation) {
+    if (userLocation != null) {
+
+      country = userLocation[0].country;
+      debugPrint("Country: $country");
+
+      postcode = userLocation[0].postalCode;
+      debugPrint("PostCode: $postcode");
+
+      street = userLocation[0].thoroughfare;
+      if(street == "") {
+        street = userLocation[0].subAdministrativeArea;
+      } else {
+        street = "United Kingdom";
+      }
+
+
+      debugPrint("Street: $street");
+    }
+  });
+
+  userPath.getDocuments().then((s) {
+    usersNumber = s.documents.length.toString();
+    debugPrint("Users: $usersNumber");
+  });
 }
 
 class FeedScreen extends StatefulWidget {
@@ -71,12 +105,10 @@ class FeedScreenState extends State<FeedScreen> {
     postStream =
         firestoreReference.collection(postPath.path).snapshots().listen((s) {
       tiles.clear();
-      debugPrint("Document Added!");
       for (var document in s.documents) {
         setState(() {
           tiles = List.from(tiles);
           tiles.add(PostCard(post: Post.fromJson(document.data)));
-          debugPrint('Tiles list length: ' + tiles.length.toString());
         });
       }
     });
@@ -84,6 +116,9 @@ class FeedScreenState extends State<FeedScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Iterable recentTiles = tiles.reversed;
+    var mostRecentPosts = recentTiles.toList();
+
     return Scaffold(
       floatingActionButton: new FloatingActionButton(
           backgroundColor: createMaterialColor(Color(0xFFE8E6D9)),
@@ -95,10 +130,10 @@ class FeedScreenState extends State<FeedScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
-            new SubtitleBar(location: "Cottingham Road", userNumber: "5"),
+            new SubtitleBar(location: street, userNumber: usersNumber),
             Expanded(
               child: new ListView(
-                children: tiles,
+                children: mostRecentPosts,
               ),
             )
           ]),

@@ -7,10 +7,18 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:umbrella/widgets.dart';
+import 'package:umbrella/utils.dart';
 import 'package:umbrella/UmbrellaBeaconTools/umbrella_beacon.dart';
 import 'package:beacon_broadcast/beacon_broadcast.dart';
 
 var firestoreReference = Firestore.instance;
+
+/* 
+
+How displaying nearby users will work:
+
+
+*/
 
 class NearbyScreen extends StatefulWidget {
   @override
@@ -167,27 +175,6 @@ class NearbyScreenState extends State<NearbyScreen> {
   }
 }
 
-getUserStreet() async {
-  Position location = getUserLocation();
-  if (getUserLocation() != null) {
-    List<Placemark> placemark = await Geolocator()
-        .placemarkFromCoordinates(location.latitude, location.longitude);
-
-    String country = placemark[0].country;
-    String postcode = placemark[0].postalCode;
-    String street = placemark[0].thoroughfare;
-
-    debugPrint("Current Postcode: " + postcode);
-
-    var split = postcode.split(" ");
-
-    var first = split[1];
-
-    var second = first.split("");
-
-    postcode = split[0] + " " + second[0];
-  }
-}
 
 startBeaconBroadcast() async {
   BeaconBroadcast beaconBroadcast = BeaconBroadcast();
@@ -217,7 +204,8 @@ startBeaconBroadcast() async {
 
         // TODO: (Low Priority) Rename BroadcastBeacon methods to make more sense for a specific platform
         beaconBroadcast
-            .setUUID(randomNumber(1, 99).toString())
+        .setUUID('8b0ca750-e7a7-4e14-bd99-095477cb3e77')
+            //.setUUID(randomNumber(1, 99).toString())
             .setMajorId(randomNumber(1, 99))
             .setMinorId(100)
             .start();

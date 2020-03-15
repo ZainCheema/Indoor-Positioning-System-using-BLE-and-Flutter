@@ -19,12 +19,28 @@ String byteListToHexString(List<int> bytes) => bytes
     .map((i) => i.toRadixString(16).padLeft(2, '0'))
     .reduce((a, b) => (a + b));
 
-getUserLocation() async {
+Future<Position> getLatLon() async {
+  Position userLocation;
   return await Geolocator()
-      .getCurrentPosition(desiredAccuracy: LocationAccuracy.best)
+      .getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation)
       .then((location) {
+    
     if (location != null) {
       debugPrint("Location: ${location.latitude},${location.longitude}");
+      userLocation = location;
     }
+
+    return userLocation;
+
   });
+}
+
+Future<List<Placemark>> getCountryCityStreet() async {
+  var location = await getLatLon();
+
+    var placemark = await Geolocator()
+        .placemarkFromCoordinates(location.latitude, location.longitude);
+    
+    return placemark;
+
 }
