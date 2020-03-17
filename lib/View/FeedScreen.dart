@@ -19,6 +19,7 @@ import '../styles.dart';
 Firestore firestoreReference = Firestore.instance;
 Uuid uuid = new Uuid();
 
+
 List<Placemark> location = new List<Placemark>();
 
 String country;
@@ -99,6 +100,8 @@ class FeedScreenState extends State<FeedScreen> {
   @override
   void initState() {
     super.initState();
+
+    debugPrint('USER ID: ' + userId);
 
     createUserRecord(user);
 

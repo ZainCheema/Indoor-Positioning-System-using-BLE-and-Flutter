@@ -10,15 +10,9 @@ import 'package:umbrella/widgets.dart';
 import 'package:umbrella/utils.dart';
 import 'package:umbrella/UmbrellaBeaconTools/umbrella_beacon.dart';
 import 'package:beacon_broadcast/beacon_broadcast.dart';
+import 'package:uuid/uuid.dart';
 
 var firestoreReference = Firestore.instance;
-
-/* 
-
-How displaying nearby users will work:
-
-
-*/
 
 class NearbyScreen extends StatefulWidget {
   @override
@@ -199,8 +193,9 @@ startBeaconBroadcast() async {
       }
 
       if (Platform.isAndroid) {
-        // ! Note: BeaconBroadcast doesnt have specific Eddystone methods,
-        // ! so setMajorId() is actually setting the beaconID.
+        //! Note: BeaconBroadcast doesnt have specific Eddystone methods,
+        //! so setMajorId() is actually setting the beaconID.
+        //! only the first 20 chars of the uuid will be used for its NamespaceID, the rest is discarded.
 
         // TODO: (Low Priority) Rename BroadcastBeacon methods to make more sense for a specific platform
         beaconBroadcast
