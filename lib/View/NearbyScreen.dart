@@ -5,6 +5,7 @@ import 'package:umbrella/utils.dart';
 import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:umbrella/Model/User.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:umbrella/widgets.dart';
 import 'package:umbrella/utils.dart';
@@ -49,6 +50,7 @@ class NearbyScreenState extends State<NearbyScreen> {
     });
 
     startBeaconBroadcast();
+    _startScan();
   }
 
   @override

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'UmbrellaBeaconTools/beacon_tools.dart';
-import 'Model/PostModel.dart';
+import 'Model/Post.dart';
 
 class IBeaconCard extends StatelessWidget {
   final IBeacon iBeacon;

@@ -1,4 +1,4 @@
-import 'PostModel.dart';
+import 'Post.dart';
 import 'package:umbrella/utils.dart';
 import 'package:umbrella/widgets.dart';
 

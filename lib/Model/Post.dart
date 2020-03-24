@@ -1,8 +1,8 @@
 // Help:
 // https://medium.com/flutter/some-options-for-deserializing-json-with-flutter-7481325a4450
 
-import 'UserModel.dart';
-import 'CommentModel.dart';
+import 'User.dart';
+import 'Comment.dart';
 
 class Post {
   const Post({this.user, this.postID, this.postText, /*this.comments*/});

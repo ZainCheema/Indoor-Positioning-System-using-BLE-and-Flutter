@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:umbrella/Model/UserModel.dart';
+import 'package:umbrella/Model/User.dart';
 import 'package:uuid/uuid.dart';
 
 // Timestamp help:

@@ -173,15 +173,13 @@ class IBeacon extends Beacon {
         .indexWhere((value) => value == IBeaconManufacturerId);
     print("Index of iBeacon manufacturer id: " + manufacturerIdIndex.toString());
 
-    // ! Re-write statement to say " if the length of the whole list - length of list from where manufacturerIdIndex is to the end < 23"
     if (scanResult.advertisementData.manufacturerData.length -
             manufacturerIdIndex +
             2 <
         23) {
       return null;
     }
-    // ! Re-write statement to say " if the first element in whole list after manufacturerIdIndex != 0x02"
-    // ! Re-write statement to say " if the second element in whole list after manufacturerIdIndex != 0x15"
+
     if (scanResult
                 .advertisementData.manufacturerData[manufacturerIdIndex + 2] !=
             0x02 ||
@@ -190,9 +188,8 @@ class IBeacon extends Beacon {
             0x15) {
       return null;
     }
-
-    // ! You will need to get a sublist of the whole list using manufacturerIdIndex as a starting index
-    List<int> rawBytes = scanResult.advertisementData.manufacturerData
+    
+   List<int> rawBytes = scanResult.advertisementData.manufacturerData
         .sublist(manufacturerIdIndex);
     var uuid = byteListToHexString(rawBytes.sublist(4, 20));
     print("uuid: " + uuid);
