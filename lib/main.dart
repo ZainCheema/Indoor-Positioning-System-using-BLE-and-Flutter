@@ -13,7 +13,7 @@ void main() {
 
   return runApp(
     ChangeNotifierProvider<AppStateModel>(
-      create: (context) => AppStateModel(),
+      create: (context) => AppStateModel.instance,
       child: UmbrellaMain(),
     ),
   );

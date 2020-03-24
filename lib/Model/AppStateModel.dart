@@ -7,6 +7,14 @@ import 'package:random_words/random_words.dart';
 import 'Post.dart';
 
 class AppStateModel extends foundation.ChangeNotifier {
+  
+    // Singleton
+  AppStateModel._();
+
+  static AppStateModel _instance = new AppStateModel._();
+
+  static AppStateModel get instance => _instance;
+  
   bool wifiEnabled = true;
   bool gpsEnabled = true;
   bool bluetoothEnabled = true;
@@ -19,7 +27,6 @@ class AppStateModel extends foundation.ChangeNotifier {
 
   // All nearby users.
   List<User> nearbyUsers;
-
 
   @override
   void notifyListeners() {

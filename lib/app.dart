@@ -4,7 +4,6 @@ import 'package:umbrella/View/NearbyScreen.dart';
 import 'package:umbrella/styles.dart';
 import 'Model/AppStateModel.dart';
 
-AppStateModel appStateModel = new AppStateModel();
 
 class UmbrellaMain extends StatelessWidget {
   @override
@@ -36,8 +35,10 @@ class BottomNavState extends State<BottomNav> {
   @override
   void initState() {
     super.initState();
+
+    AppStateModel appStateModel = AppStateModel.instance;
     
-   // appStateModel.init();
+    appStateModel.init();
   }
 
   @override
