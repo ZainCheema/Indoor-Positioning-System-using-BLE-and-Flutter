@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:umbrella/Model/AppStateModel.dart';
 import 'package:umbrella/utils.dart';
 import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -42,19 +43,26 @@ class NearbyScreenState extends State<NearbyScreen> {
 
     bleManager.createClient();
 
+    User user = AppStateModel.instance.getUser();
+    debugPrint("UUID: " + user.uuid);
+
     // Subscribe to state changes
     _stateSubscription = bleManager.observeBluetoothState().listen((s) {
       setState(() {
         state = s;
+        debugPrint("Bluetooth State changed");
+        if (state == BluetoothState.POWERED_ON) {
+          startBeaconBroadcast();
+          _startScan();
+        }
       });
     });
-
-    startBeaconBroadcast();
-    _startScan();
   }
 
   @override
   void dispose() {
+    debugPrint("dispose() called");
+    beacons.clear();
     _stateSubscription?.cancel();
     _stateSubscription = null;
     _scanSubscription?.cancel();
@@ -76,6 +84,14 @@ class NearbyScreenState extends State<NearbyScreen> {
     }
 
     _scanSubscription = umbrellaBeacon.scan(bleManager).listen((beacon) {
+      // List<User> allUsers = AppStateModel.instance.getAllUsers();
+
+      // for(var user in allUsers) {
+      //   if(user.uuid == beacon.id) {
+      //     debugPrint("User " + user.userName + " is nearby!");  
+      //   }
+      // }   
+
       setState(() {
         beacons[beacon.hash] = beacon;
       });
@@ -95,21 +111,6 @@ class NearbyScreenState extends State<NearbyScreen> {
     });
   }
 
-  _buildScanningButton() {
-    if (state != BluetoothState.POWERED_ON) {
-      return null;
-    }
-    if (isScanning) {
-      return new FloatingActionButton(
-        child: new Icon(Icons.stop),
-        onPressed: _stopScan,
-        backgroundColor: Colors.red,
-      );
-    } else {
-      return new FloatingActionButton(
-          child: new Icon(Icons.add), onPressed: _startScan);
-    }
-  }
 
   _buildScanResultTiles() {
     return beacons.values.map<Widget>((b) {
@@ -123,21 +124,6 @@ class NearbyScreenState extends State<NearbyScreen> {
     }).toList();
   }
 
-  _buildAlertTile() {
-    return new Container(
-      color: Colors.redAccent,
-      child: new ListTile(
-        title: new Text(
-          'Bluetooth adapter is ${state.toString().substring(15)}',
-          style: Theme.of(context).primaryTextTheme.subhead,
-        ),
-        trailing: new Icon(
-          Icons.error,
-          color: Theme.of(context).primaryTextTheme.subhead.color,
-        ),
-      ),
-    );
-  }
 
   _buildProgressBarTile() {
     return new LinearProgressIndicator();
@@ -147,13 +133,12 @@ class NearbyScreenState extends State<NearbyScreen> {
   Widget build(BuildContext context) {
     var tiles = new List<Widget>();
     if (state != BluetoothState.POWERED_ON) {
-      tiles.add(_buildAlertTile());
+      tiles.add(buildAlertTile(context, state.toString().substring(15)));
     }
 
     tiles.addAll(_buildScanResultTiles());
 
     return Scaffold(
-      floatingActionButton: _buildScanningButton(),
       body: new Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
@@ -171,7 +156,6 @@ class NearbyScreenState extends State<NearbyScreen> {
   }
 }
 
-
 startBeaconBroadcast() async {
   BeaconBroadcast beaconBroadcast = BeaconBroadcast();
 
@@ -184,43 +168,46 @@ startBeaconBroadcast() async {
       // ! EDDYSTONE DOESNT HAVE MAJOR & MINOR VALUES! IBEACON DOES! HENCE THE NO WORKING!
       // ! https://www.beaconzone.co.uk/choosinguuidmajorminor
       // ! https://github.com/google/eddystone/issues/188
-      // TODO: (High Priority) Set unique UUID's for beacons, differentiate between platform
+      if(AppStateModel.instance.getUser() != null) {
+        if (Platform.isIOS) {
+          beaconBroadcast
+              .setUUID(Uuid().v1().toString())
+              .setMajorId(1)
+              .setMinorId(100)
+              .start();
+        }
 
-      if (Platform.isIOS) {
-        beaconBroadcast
-            .setUUID('8b0ca750-e7a7-4e14-bd99-095477cb3e77')
-            .setMajorId(1)
-            .setMinorId(100)
-            .start();
+        if (Platform.isAndroid) {
+          //! Note: BeaconBroadcast doesnt have specific Eddystone methods,
+          //! so setMajorId() is actually setting the beaconID.
+          //! only the first 20 chars of the uuid will be used for its NamespaceID, the rest is discarded.
+
+          // TODO: (Low Priority) Rename BroadcastBeacon methods to make more sense for a specific platform
+          beaconBroadcast
+              .setUUID(AppStateModel.instance.getUser().uuid)
+              //.setUUID(randomNumber(1, 99).toString())
+              .setMajorId(randomNumber(1, 99))
+              .setMinorId(100)
+              .start();
+        }
+
+        beaconBroadcast.getAdvertisingStateChange().listen((isAdvertising) {
+          return "Beacon is advertising";
+        });
+
+      } else {
+        return "User was NULL";
       }
-
-      if (Platform.isAndroid) {
-        //! Note: BeaconBroadcast doesnt have specific Eddystone methods,
-        //! so setMajorId() is actually setting the beaconID.
-        //! only the first 20 chars of the uuid will be used for its NamespaceID, the rest is discarded.
-
-        // TODO: (Low Priority) Rename BroadcastBeacon methods to make more sense for a specific platform
-        beaconBroadcast
-        .setUUID('8b0ca750-e7a7-4e14-bd99-095477cb3e77')
-            //.setUUID(randomNumber(1, 99).toString())
-            .setMajorId(randomNumber(1, 99))
-            .setMinorId(100)
-            .start();
-      }
-
-      beaconBroadcast.getAdvertisingStateChange().listen((isAdvertising) {
-        print("Beacon is advertising");
-      });
 
       break;
     case BeaconStatus.NOT_SUPPORTED_MIN_SDK:
-      // Your Android system version is too low (min. is 21)
+      return "Your Android system version is too low (min. is 21)";
       break;
     case BeaconStatus.NOT_SUPPORTED_BLE:
-      // Your device doesn't support BLE
+      return "Your device doesn't support BLE";
       break;
     case BeaconStatus.NOT_SUPPORTED_CANNOT_GET_ADVERTISER:
-      // Either your chipset or driver is incompatible
+      return "Either your chipset or driver is incompatible";
       break;
   }
 }

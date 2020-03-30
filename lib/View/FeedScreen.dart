@@ -48,24 +48,17 @@ class FeedScreenState extends State<FeedScreen> {
     var mostRecentPosts = recentTiles.toList();
 
     return Consumer<AppStateModel>(builder: (context, model, child) {
-      CollectionReference postPath = model.firestoreReference
-          .collection('Country')
-          .document('City')
-          .collection('Street')
-          .document('Posts')
-          .collection('Post');
 
-      postStream = model.firestoreReference
-          .collection(postPath.path)
-          .snapshots()
+      postStream = model.postSnapshots
           .listen((s) {
-        tiles.clear();
-        for (var document in s.documents) {
-          setState(() {
-            tiles = List.from(tiles);
-            tiles.add(PostCard(post: Post.fromJson(document.data)));
-          });
-        }
+            debugPrint("New post made, loaded");
+            tiles.clear();
+            for (var document in s.documents) {
+              setState(() {
+                tiles = List.from(tiles);
+                tiles.add(PostCard(post: Post.fromJson(document.data)));
+              });
+            }
       });
 
       return Scaffold(
@@ -73,13 +66,13 @@ class FeedScreenState extends State<FeedScreen> {
             backgroundColor: createMaterialColor(Color(0xFFE8E6D9)),
             child: new Icon(Icons.add),
             onPressed: () {
-              return newPostDialog(context, model.getUser(), postPath);
+              return newPostDialog(context, model.getUser(), model.getPostPath());
             }),
         body: new Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              new SubtitleBar(location: street, userNumber: usersNumber),
+              new SubtitleBar(location: model.getUser().userName, userNumber: usersNumber),
               Expanded(
                 child: new ListView(
                   children: mostRecentPosts,

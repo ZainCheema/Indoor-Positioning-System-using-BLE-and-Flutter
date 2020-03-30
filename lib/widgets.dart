@@ -160,4 +160,18 @@ class PostCard extends StatelessWidget {
   }
 }
 
-
+buildAlertTile(BuildContext context, String message) {
+  return new Container(
+    color: Colors.redAccent,
+    child: new ListTile(
+      title: new Text(
+        'Bluetooth adapter is ${message}',
+        style: Theme.of(context).primaryTextTheme.subhead,
+      ),
+      trailing: new Icon(
+        Icons.error,
+        color: Theme.of(context).primaryTextTheme.subhead.color,
+      ),
+    ),
+  );
+}
