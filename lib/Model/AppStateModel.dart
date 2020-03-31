@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart' as foundation;
 import 'package:uuid/uuid.dart';
 import 'User.dart';
 import 'package:random_words/random_words.dart';
-import 'Post.dart';
 
 class AppStateModel extends foundation.ChangeNotifier {
   // Singleton
@@ -25,6 +24,8 @@ class AppStateModel extends foundation.ChangeNotifier {
 
   // User of the app.
   User user;
+
+  String iBeaconUUID;
 
   // A list of all users in the app.
   List<User> allUsers;
@@ -68,6 +69,7 @@ class AppStateModel extends foundation.ChangeNotifier {
       Iterable<WordPair> userNames = generateWordPairs().take(1);
 
       String userId = uuid.v1().toString();
+      iBeaconUUID = userId;
       userId = userId.replaceAll(RegExp('-'), '');
 
       if(Platform.isAndroid) {
@@ -77,11 +79,11 @@ class AppStateModel extends foundation.ChangeNotifier {
         userId = userId.substring(0, 20);
 
         if(userId.length == 20) {
-          debugPrint(userId);
+         // debugPrint(userId);
           debugPrint("Android users ID is the correct format");
         } else {
           debugPrint(userId);
-          debugPrint(userId.length.toString());
+          // debugPrint(userId.length.toString());
           debugPrint("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
         }
       }
@@ -134,6 +136,10 @@ class AppStateModel extends foundation.ChangeNotifier {
 
   User getUser() {
     return user;
+  }
+
+  String getIBeaconUUID() {
+    return iBeaconUUID;
   }
 
   CollectionReference getPostPath() {
