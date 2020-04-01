@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart' as foundation;
 import 'package:uuid/uuid.dart';
 import 'User.dart';
 import 'package:random_words/random_words.dart';
+import 'package:flutter_compass/flutter_compass.dart';
 
 class AppStateModel extends foundation.ChangeNotifier {
   // Singleton
@@ -41,17 +42,16 @@ class AppStateModel extends foundation.ChangeNotifier {
       .collection('User');
 
   CollectionReference postPath = Firestore.instance
-          .collection('Country')
-          .document('City')
-          .collection('Street')
-          .document('Posts')
-          .collection('Post');
+      .collection('Country')
+      .document('City')
+      .collection('Street')
+      .document('Posts')
+      .collection('Post');
 
-  
   Stream<QuerySnapshot> userSnapshots;
 
   StreamSubscription usersStream;
-  
+
   Stream<QuerySnapshot> postSnapshots;
 
   @override
@@ -62,68 +62,81 @@ class AppStateModel extends foundation.ChangeNotifier {
   void init() async {
     // This will check wifi, gps and bluetooth
     // If all these checks pass, create the user, then load the nearby users
+    debugPrint("init() called");
+
+    allUsers = new List<User>();
+    nearbyUsers = new List<User>();
 
     if (wifiEnabled & bluetoothEnabled & gpsEnabled) {
-      debugPrint("init() called");
-
-      Iterable<WordPair> userNames = generateWordPairs().take(1);
+      String userName = generateWordPairs().take(1).elementAt(0).toString();
 
       String userId = uuid.v1().toString();
       iBeaconUUID = userId;
       userId = userId.replaceAll(RegExp('-'), '');
 
-      if(Platform.isAndroid) {
+      if (Platform.isAndroid) {
         // For Android, the user's uuid has to be 20 chars long to conform
         // with Eddystones NamespaceId length
         // Also has to be without hyphens
         userId = userId.substring(0, 20);
 
-        if(userId.length == 20) {
-         // debugPrint(userId);
+        if (userId.length == 20) {
           debugPrint("Android users ID is the correct format");
         } else {
+          debugPrint('user ID was of an incorrect format');
           debugPrint(userId);
-          // debugPrint(userId.length.toString());
           debugPrint("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
         }
       }
 
-      String userName = userNames.elementAt(0).toString();
+      FlutterCompass.events.listen((double direction) async {
+        debugPrint(direction.toString());
 
-      Map<String, dynamic> userJson = {'UUID': userId, 'UserName': userName};
+        Map<String, dynamic> userJson = {
+          'UUID': userId,
+          'UserName': userName,
+          'Direction': direction
+        };
 
-      user = new User.fromJson(userJson);
-
-      allUsers = new List<User>();
-
-      nearbyUsers = new List<User>();
-
-      userSnapshots = Firestore.instance
-                .collection(userPath.path)
-                .snapshots();
-
-      usersStream = userSnapshots.listen((s) {
-        debugPrint("USER ADDED");
-        allUsers.clear();
-        for(var document in s.documents) {
-          allUsers = List.from(allUsers);
-          allUsers.add(User.fromJson(document.data));
-        }
-        debugPrint("ALL USERS: " + allUsers.length.toString());
+        uploadUser(userJson);
       });
 
-      postSnapshots = Firestore.instance
-                .collection(postPath.path)
-                .snapshots();
-    }
+      streamUsers();
 
-    await userPath.document(user.uuid).setData({'UUID': user.uuid, 'UserName': user.userName});
+      postSnapshots = Firestore.instance.collection(postPath.path).snapshots();
+    }
   }
 
   void loadNearbyUsers() {}
 
   void addNearbyUser(User pUser) {
     nearbyUsers.add(pUser);
+  }
+
+  void uploadUser(Map<String, dynamic> json) async {
+    user = new User.fromJson(json);
+
+    await userPath.document(user.uuid).setData({
+      'UUID': user.uuid,
+      'UserName': user.userName,
+      'Direction': user.direction
+    });
+
+    debugPrint("User uploaded!");
+  }
+
+  void streamUsers() {
+    userSnapshots = Firestore.instance.collection(userPath.path).snapshots();
+
+    usersStream = userSnapshots.listen((s) {
+      debugPrint("USER ADDED");
+      allUsers.clear();
+      for (var document in s.documents) {
+        allUsers = List.from(allUsers);
+        allUsers.add(User.fromJson(document.data));
+      }
+      debugPrint("ALL USERS: " + allUsers.length.toString());
+    });
   }
 
   List<User> getNearbyUsers() {

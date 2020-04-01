@@ -44,3 +44,7 @@ Future<List<Placemark>> getCountryCityStreet() async {
     return placemark;
 
 }
+
+Map<double, String> angleToClock = {
+  
+};

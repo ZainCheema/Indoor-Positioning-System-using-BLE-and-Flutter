@@ -14,14 +14,15 @@ class User {
       userName: json['UserName'],
       uuid: json['UUID'],
       distance: 0,
-      direction: 0
+      direction: json['Direction']
 
     );
   }
 
   Map<dynamic, dynamic> toJson() => {
     'UUID': uuid,
-    "UserName": userName
+    'UserName': userName,
+    'Direction': direction
   };
 
 
