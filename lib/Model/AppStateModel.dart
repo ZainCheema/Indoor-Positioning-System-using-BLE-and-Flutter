@@ -6,6 +6,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:uuid/uuid.dart';
 import 'User.dart';
+import 'package:umbrella/utils.dart';
 import 'package:random_words/random_words.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 
@@ -91,6 +92,7 @@ class AppStateModel extends foundation.ChangeNotifier {
 
       FlutterCompass.events.listen((double direction) async {
         debugPrint(direction.toString());
+        debugPrint(userName + " facing " + angleToClockFace(direction) + " O'Clock");
 
         Map<String, dynamic> userJson = {
           'UUID': userId,

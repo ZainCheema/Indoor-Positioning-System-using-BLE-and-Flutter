@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'Model/User.dart';
 import 'UmbrellaBeaconTools/beacon_tools.dart';
 import 'Model/Post.dart';
 
@@ -157,6 +158,36 @@ class PostCard extends StatelessWidget {
                 ),
               ),
             ])));
+  }
+}
+
+
+class UserCard extends StatelessWidget {
+  final User user;
+
+  UserCard({@required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.all(18.0),
+      child: Container(
+        child: Column(children: <Widget>[
+          Align(
+            alignment: Alignment.topRight,
+            child: Text(user.distance.toString())
+          ),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: Text(user.userName),
+          ),
+          Align(
+            alignment: Alignment.bottomRight,
+            child: Text(user.clock),
+          )
+        ],)
+      )
+    );
   }
 }
 
