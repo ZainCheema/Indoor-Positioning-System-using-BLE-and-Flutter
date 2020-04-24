@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -91,12 +92,15 @@ class AppStateModel extends foundation.ChangeNotifier {
       }
 
       FlutterCompass.events.listen((double direction) async {
+        debugPrint('Converted direction: ' + direction.round().toString());
+        String facing = angleToClockFace(direction.round());
         debugPrint(direction.toString());
-        debugPrint(userName + " facing " + angleToClockFace(direction) + " O'Clock");
+        debugPrint(userName + " facing " + facing + " O'Clock");
 
         Map<String, dynamic> userJson = {
           'UUID': userId,
           'UserName': userName,
+          'Facing': facing,
           'Direction': direction
         };
 
@@ -121,6 +125,7 @@ class AppStateModel extends foundation.ChangeNotifier {
     await userPath.document(user.uuid).setData({
       'UUID': user.uuid,
       'UserName': user.userName,
+      'Facing': user.facing,
       'Direction': user.direction
     });
 

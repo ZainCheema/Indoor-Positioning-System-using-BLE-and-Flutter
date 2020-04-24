@@ -155,8 +155,8 @@ class NearbyScreenState extends State<NearbyScreen> {
         children: <Widget>[
           (isScanning) ? _buildProgressBarTile() : new Container(),
           new SubtitleBar(
-              location: AppStateModel.instance.getUser().userName,
-              userNumber: "5"),
+              left: AppStateModel.instance.getUser().userName,
+              right: "5"),
           Expanded(
             child: new ListView(
               children: tiles,

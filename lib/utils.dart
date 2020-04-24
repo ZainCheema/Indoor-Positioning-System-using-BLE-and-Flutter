@@ -42,9 +42,9 @@ Future<List<Placemark>> getCountryCityStreet() async {
   return placemark;
 }
 
-String angleToClockFace(double pAngle) {
+String angleToClockFace(int pAngle) {
   if (pAngle >= 0 && pAngle <= 30) {
-    return "1";
+    return " 1";
   }
   if (pAngle >= 31 && pAngle <= 60) {
     return "2";

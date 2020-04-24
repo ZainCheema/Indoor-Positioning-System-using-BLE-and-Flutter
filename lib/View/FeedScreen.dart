@@ -72,7 +72,7 @@ class FeedScreenState extends State<FeedScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              new SubtitleBar(location: model.getUser().userName, userNumber: usersNumber),
+              new SubtitleBar(left: model.getUser().userName, right: usersNumber),
               Expanded(
                 child: new ListView(
                   children: mostRecentPosts,

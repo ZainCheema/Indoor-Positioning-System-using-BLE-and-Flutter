@@ -88,10 +88,10 @@ class EddystoneUIDCard extends StatelessWidget {
 }
 
 class SubtitleBar extends StatelessWidget {
-  final String location;
-  final String userNumber;
+  final String left;
+  final String right;
 
-  SubtitleBar({@required this.location, @required this.userNumber});
+  SubtitleBar({@required this.left, @required this.right});
 
   @override
   Widget build(BuildContext context) {
@@ -105,11 +105,11 @@ class SubtitleBar extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Text(
-              location,
+              "user: " + left,
               style: subtitleTextStyle,
             ),
             Text(
-              userNumber + " users nearby",
+              "Facing "+ right + " O' Clock",
               style: subtitleTextStyle,
             ),
           ],
@@ -153,14 +153,13 @@ class PostCard extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(post.user.distance.toString()),
-                    Text(post.user.direction.toString()),
+                    Text("Facing " + post.user.facing.toString() + " O'Clock"),
                   ],
                 ),
               ),
             ])));
   }
 }
-
 
 class UserCard extends StatelessWidget {
   final User user;
@@ -170,24 +169,35 @@ class UserCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: EdgeInsets.all(18.0),
-      child: Container(
-        child: Column(children: <Widget>[
-          Align(
-            alignment: Alignment.topRight,
-            child: Text(user.distance.toString())
-          ),
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(user.userName),
-          ),
-          Align(
-            alignment: Alignment.bottomRight,
-            child: Text(user.clock),
-          )
-        ],)
-      )
-    );
+        margin: EdgeInsets.all(18.0),
+        child: Container(
+            child: Column(
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                  alignment: Alignment.topRight,
+                  child: Text(user.distance.toString())),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  user.userName,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: Text(user.facing),
+              ),
+            )
+          ],
+        )));
   }
 }
 
