@@ -28,5 +28,4 @@ class User {
     'Direction': direction
   };
 
-
 }

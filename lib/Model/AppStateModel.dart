@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' as foundation;
+import 'package:umbrella/Model/Post.dart';
 import 'package:uuid/uuid.dart';
 import 'User.dart';
 import 'package:umbrella/utils.dart';
@@ -35,6 +36,8 @@ class AppStateModel extends foundation.ChangeNotifier {
 
   // All nearby users.
   List<User> nearbyUsers;
+
+  List<Post> initialPosts;
 
   CollectionReference userPath = Firestore.instance
       .collection('Country')
@@ -111,6 +114,26 @@ class AppStateModel extends foundation.ChangeNotifier {
 
       postSnapshots = Firestore.instance.collection(postPath.path).snapshots();
     }
+  }
+
+  void loadPosts() {
+    debugPrint("loadPosts() called");
+    List<Post> initialPosts = new List<Post>();
+    postSnapshots.forEach((snapshot) =>
+      snapshot.documents.forEach((document) =>
+        initialPosts.add(Post.fromJson(document.data))
+      )
+    );
+    setPosts(initialPosts);
+  }
+
+
+  void setPosts(List<Post> posts) {
+    initialPosts = List.from(posts);
+  }
+
+  List<Post> getPosts() {
+    return initialPosts;
   }
 
   void loadNearbyUsers() {}

@@ -37,7 +37,7 @@ class ModelTester {
       'User': dummyUserJsonList[randomNumber(0, 4)],
       'PostID': '12132342312',
       'CommentText': 'Thats a banger of a song tbh',
-      'CommentID': 'cringe',
+      'CommentID': '12012730942',
       'Upvotes': 0
     },
   ];
