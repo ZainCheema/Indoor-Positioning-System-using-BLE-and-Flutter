@@ -152,20 +152,20 @@ class AppStateModel extends foundation.ChangeNotifier {
       'Direction': user.direction
     });
 
-    debugPrint("User uploaded!");
+ //   debugPrint("User uploaded!");
   }
 
   void streamUsers() {
     userSnapshots = Firestore.instance.collection(userPath.path).snapshots();
 
     usersStream = userSnapshots.listen((s) {
-      debugPrint("USER ADDED");
+    //  debugPrint("USER ADDED");
       allUsers.clear();
       for (var document in s.documents) {
         allUsers = List.from(allUsers);
         allUsers.add(User.fromJson(document.data));
       }
-      debugPrint("ALL USERS: " + allUsers.length.toString());
+ //     debugPrint("ALL USERS: " + allUsers.length.toString());
     });
   }
 

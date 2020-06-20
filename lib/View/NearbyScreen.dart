@@ -27,8 +27,6 @@ class NearbyScreen extends StatefulWidget {
 class NearbyScreenState extends State<NearbyScreen> {
   UmbrellaBeacon umbrellaBeacon = UmbrellaBeacon.instance;
 
-
-
   BleManager bleManager = BleManager();
 
   // Scanning
@@ -104,32 +102,34 @@ class NearbyScreenState extends State<NearbyScreen> {
   }
 
   _buildScanResultTiles() {
+    print("_buildScaneResultTiles() entered");
     List<User> allUsers = AppStateModel.instance.getAllUsers();
+    debugPrint("All Users: " + allUsers.length.toString());
     List<User> nearbyUsers = new List<User>();
 
-    return beacons.values.map<Widget>((b) {
-      if (b is IBeacon) { 
-        for (var pUser in allUsers) {
-          if (pUser.uuid == b.uuid) {
-            debugPrint("User " + pUser.userName + " is nearby!");
-            nearbyUsers.add(pUser);
-            return UserCard(user: pUser);
+      return beacons.values.map<Widget>((b) {
+        if (b is IBeacon) {
+          for (var pUser in allUsers) {
+            if (pUser.uuid == b.uuid) {
+              debugPrint("User " + pUser.userName + " is nearby!");
+              nearbyUsers.add(pUser);
+              return UserCard(user: pUser);
+            }
           }
+          return IBeaconCard(iBeacon: b);
         }
-        return IBeaconCard(iBeacon: b);
-      }
-      if (b is EddystoneUID) {
-        for (var pUser in allUsers) {
-          if (pUser.uuid == b.namespaceId) {
-            debugPrint("User " + pUser.userName + " is nearby!");
-            nearbyUsers.add(pUser);
-            return UserCard(user: pUser);
+        if (b is EddystoneUID) {
+          for (var pUser in allUsers) {
+            if (pUser.uuid == b.namespaceId) {
+              debugPrint("User " + pUser.userName + " is nearby!");
+              nearbyUsers.add(pUser);
+              return UserCard(user: pUser);
+            }
           }
+          return EddystoneUIDCard(eddystoneUID: b);
         }
-        return EddystoneUIDCard(eddystoneUID: b);
-      }
-      return Card();
-    }).toList();
+        return Card();
+      }).toList();
   }
 
   _buildProgressBarTile() {
@@ -148,6 +148,8 @@ class NearbyScreenState extends State<NearbyScreen> {
 
     tiles.addAll(_buildScanResultTiles());
 
+    tiles = _buildScanResultTiles();
+
     return Scaffold(
       body: new Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -155,8 +157,7 @@ class NearbyScreenState extends State<NearbyScreen> {
         children: <Widget>[
           (isScanning) ? _buildProgressBarTile() : new Container(),
           new SubtitleBar(
-              left: AppStateModel.instance.getUser().userName,
-              right: "5"),
+              left: AppStateModel.instance.getUser().userName, right: "5"),
           Expanded(
             child: new ListView(
               children: tiles,
@@ -180,33 +181,34 @@ startBeaconBroadcast() async {
       // ! EDDYSTONE DOESNT HAVE MAJOR & MINOR VALUES! IBEACON DOES! HENCE THE NO WORKING!
       // ! https://www.beaconzone.co.uk/choosinguuidmajorminor
       // ! https://github.com/google/eddystone/issues/188
-        if (Platform.isIOS) {
-          beaconBroadcast
-              .setUUID(AppStateModel.instance.getIBeaconUUID())
-              .setMajorId(1)
-              .setMinorId(100)
-              .start();
-        }
+      if (Platform.isIOS) {
+        beaconBroadcast
+            .setUUID(AppStateModel.instance.getIBeaconUUID())
+            .setMajorId(1)
+            .setMinorId(100)
+            .start();
+      }
 
-        if (Platform.isAndroid) {
-          //! Note: BeaconBroadcast doesnt have specific Eddystone methods,
-          //! so setMajorId() is actually setting the beaconID.
-          //! only the first 20 chars of the uuid will be used for its NamespaceID, the rest is discarded.
+      if (Platform.isAndroid) {
+        //! Note: BeaconBroadcast doesnt have specific Eddystone methods,
+        //! so setMajorId() is actually setting the beaconID.
+        //! only the first 20 chars of the uuid will be used for its NamespaceID, the rest is discarded.
 
-          // TODO: (Low Priority) Rename BroadcastBeacon methods to make more sense for a specific platform
-          beaconBroadcast
-              .setUUID(AppStateModel.instance.getUser().uuid)
-              .setMajorId(randomNumber(1, 99))
-              .setMinorId(100)
-              .start();
-        }
+        // TODO: (Low Priority) Rename BroadcastBeacon methods to make more sense for a specific platform
+        beaconBroadcast
+            .setUUID(AppStateModel.instance.getUser().uuid)
+            .setMajorId(randomNumber(1, 99))
+            .setMinorId(100)
+            .start();
+      }
 
-        beaconBroadcast.getAdvertisingStateChange().listen((isAdvertising) {
-          beaconStatusMessage = "Beacon is advertising";
-        });
+      beaconBroadcast.getAdvertisingStateChange().listen((isAdvertising) {
+        beaconStatusMessage = "Beacon is advertising";
+      });
       break;
     case BeaconStatus.NOT_SUPPORTED_MIN_SDK:
-      beaconStatusMessage = "Your Android system version is too low (min. is 21)";
+      beaconStatusMessage =
+          "Your Android system version is too low (min. is 21)";
       break;
     case BeaconStatus.NOT_SUPPORTED_BLE:
       beaconStatusMessage = "Your device doesn't support BLE";
