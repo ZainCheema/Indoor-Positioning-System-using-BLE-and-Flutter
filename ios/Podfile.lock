@@ -228,9 +228,9 @@ PODS:
     - GoogleUtilities/Environment (~> 6.5)
     - GoogleUtilities/UserDefaults (~> 6.5)
   - Flutter (1.0.0)
-  - flutter_ble_lib (0.0.1):
+  - flutter_ble_lib (2.2.5):
     - Flutter
-    - MultiplatformBleAdapter (= 0.0.4)
+    - MultiplatformBleAdapter (~> 0.1.6)
   - flutter_compass (0.0.1):
     - Flutter
   - geolocator (5.3.0):
@@ -284,7 +284,7 @@ PODS:
   - leveldb-library (1.22)
   - "location_permissions (2.0.4+1)":
     - Flutter
-  - MultiplatformBleAdapter (0.0.4)
+  - MultiplatformBleAdapter (0.1.6)
   - nanopb (0.3.9011):
     - nanopb/decode (= 0.3.9011)
     - nanopb/encode (= 0.3.9011)
@@ -367,7 +367,7 @@ SPEC CHECKSUMS:
   FirebaseInstallations: 575cd32f2aec0feeb0e44f5d0110a09e5e60b47b
   FirebaseInstanceID: 031d7d0c8e7b5c030bbeb4d2a690550375e83fec
   Flutter: 0e3d915762c693b495b44d77113d4970485de6ec
-  flutter_ble_lib: 9b0fcef11a0cb8432317e445c4cd413f9cab3b08
+  flutter_ble_lib: 8c0d034afb485b631d1409182c387555576c2332
   flutter_compass: cbbd285cea1584c7ac9c4e0c3e1f17cbea55e855
   geolocator: 7cdcf71180b80913b3cd84ab715d3b5365b378af
   google_api_availability: 6f1017d3a61be12be3bd9f929cc5b2606f24ae7f
@@ -379,7 +379,7 @@ SPEC CHECKSUMS:
   gRPC-Core: c9aef9a261a1247e881b18059b84d597293c9947
   leveldb-library: 55d93ee664b4007aac644a782d11da33fba316f7
   location_permissions: 360d12ecd1c94a4cab68585f508be1d5ad944c8b
-  MultiplatformBleAdapter: 1beec49bbd1585505a73d4bbf649e05a55dbd85e
+  MultiplatformBleAdapter: 652f47ecd7f5036756517cf66833210709a72eab
   nanopb: 18003b5e52dab79db540fe93fe9579f399bd1ccd
   PromisesObjC: c119f3cd559f50b7ae681fa59dc1acd19173b7e6
 

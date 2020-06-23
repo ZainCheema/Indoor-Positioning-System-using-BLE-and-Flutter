@@ -102,7 +102,7 @@ class NearbyScreenState extends State<NearbyScreen> {
   }
 
   _buildScanResultTiles() {
-    print("_buildScaneResultTiles() entered");
+    print("_buildScanResultTiles() entered");
     List<User> allUsers = AppStateModel.instance.getAllUsers();
     debugPrint("All Users: " + allUsers.length.toString());
     List<User> nearbyUsers = new List<User>();
@@ -176,7 +176,7 @@ startBeaconBroadcast() async {
       await beaconBroadcast.checkTransmissionSupported();
   switch (transmissionSupportStatus) {
     case BeaconStatus.SUPPORTED:
-      print("You're good to go, you can advertise as a beacon");
+      print("Beacon advertising is supported on this device");
 
       // ! EDDYSTONE DOESNT HAVE MAJOR & MINOR VALUES! IBEACON DOES! HENCE THE NO WORKING!
       // ! https://www.beaconzone.co.uk/choosinguuidmajorminor
@@ -187,6 +187,8 @@ startBeaconBroadcast() async {
             .setMajorId(1)
             .setMinorId(100)
             .start();
+
+        print("Attempting to start Beacon broadcast...");
       }
 
       if (Platform.isAndroid) {
@@ -203,18 +205,22 @@ startBeaconBroadcast() async {
       }
 
       beaconBroadcast.getAdvertisingStateChange().listen((isAdvertising) {
-        beaconStatusMessage = "Beacon is advertising";
+        beaconStatusMessage = "Beacon is now advertising";
+        print(beaconStatusMessage);
       });
       break;
     case BeaconStatus.NOT_SUPPORTED_MIN_SDK:
       beaconStatusMessage =
           "Your Android system version is too low (min. is 21)";
+        print(beaconStatusMessage);
       break;
     case BeaconStatus.NOT_SUPPORTED_BLE:
       beaconStatusMessage = "Your device doesn't support BLE";
+      print(beaconStatusMessage);
       break;
     case BeaconStatus.NOT_SUPPORTED_CANNOT_GET_ADVERTISER:
       beaconStatusMessage = "Either your chipset or driver is incompatible";
+      print(beaconStatusMessage);
       break;
   }
 }
