@@ -102,7 +102,7 @@ class NearbyScreenState extends State<NearbyScreen> {
   }
 
   _buildScanResultTiles() {
-    print("_buildScaneResultTiles() entered");
+    print("_buildScanResultTiles() entered");
     List<User> allUsers = AppStateModel.instance.getAllUsers();
     debugPrint("All Users: " + allUsers.length.toString());
     List<User> nearbyUsers = new List<User>();

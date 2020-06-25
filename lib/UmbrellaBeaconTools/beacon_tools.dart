@@ -110,7 +110,7 @@ class EddystoneUID extends Eddystone {
       return null;
     }
 
-    //print("Eddystone beacon detected!");
+    print("Eddystone beacon detected!");
 
     List<int> rawBytes =
         scanResult.advertisementData.serviceData[EddystoneServiceId];
@@ -160,7 +160,7 @@ class IBeacon extends Beacon {
 
   factory IBeacon.fromScanResult(ScanResult scanResult) {
 
-    print("Scanning for iBeacon");
+    //print("Scanning for iBeacon");
 
     Uint8List manuData = scanResult.advertisementData.manufacturerData;
 
@@ -192,13 +192,15 @@ class IBeacon extends Beacon {
    List<int> rawBytes = scanResult.advertisementData.manufacturerData
         .sublist(manufacturerIdIndex);
     var uuid = byteListToHexString(rawBytes.sublist(4, 20));
-    print("uuid: " + uuid);
+    //print("uuid: " + uuid);
     var major = twoByteToInt16(rawBytes[20], rawBytes[21]);
-    print("major: " + major.toString());
+    //print("major: " + major.toString());
     var minor = twoByteToInt16(rawBytes[22], rawBytes[23]);
-    print("minor: " + minor.toString());
+    //print("minor: " + minor.toString());
     var tx = byteToInt8(rawBytes[24]);
-    print("tx power: " + tx.toString());
+    //print("tx power: " + tx.toString());
+
+    print("iBeacon detected!");
 
     return IBeacon(
       uuid: uuid,
