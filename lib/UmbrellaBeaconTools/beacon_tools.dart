@@ -91,7 +91,7 @@ class EddystoneUID extends Eddystone {
       : super(tx: tx, scanResult: scanResult, frameType: frameType);
 
   factory EddystoneUID.fromScanResult(ScanResult scanResult) {
-   // print("Scanning for Eddystone beacon");
+   print("Scanning for Eddystone beacon");
 
     if(scanResult.advertisementData.serviceData == null) {
       return null;
@@ -115,13 +115,13 @@ class EddystoneUID extends Eddystone {
     List<int> rawBytes =
         scanResult.advertisementData.serviceData[EddystoneServiceId];
     var frameType = rawBytes[0];
-    //print("frameType: " + frameType.toString());
+    print("frameType: " + frameType.toString());
     var tx = byteToInt8(rawBytes[1]);
-    //print("tx power: " + tx.toString());
+    print("tx power: " + tx.toString());
     var namespaceId = byteListToHexString(rawBytes.sublist(2, 12));
-    //print("namespace id: " + namespaceId);
+    print("namespace id: " + namespaceId);
     var beaconId = byteListToHexString(rawBytes.sublist(12, 18));
-    //print("beacon id: " + beaconId);
+    print("beacon id: " + beaconId);
 
     return EddystoneUID(
         frameType: frameType,
