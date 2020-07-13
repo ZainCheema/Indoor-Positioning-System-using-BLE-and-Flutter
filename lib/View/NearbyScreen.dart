@@ -108,16 +108,6 @@ class NearbyScreenState extends State<NearbyScreen> {
     List<User> nearbyUsers = new List<User>();
 
       return beacons.values.map<Widget>((b) {
-        if (b is IBeacon) {
-          for (var pUser in allUsers) {
-            if (pUser.uuid == b.uuid) {
-              debugPrint("User " + pUser.userName + " is nearby!");
-              nearbyUsers.add(pUser);
-              return UserCard(user: pUser);
-            }
-          }
-          return IBeaconCard(iBeacon: b);
-        }
         if (b is EddystoneUID) {
           for (var pUser in allUsers) {
             if (pUser.uuid == b.namespaceId) {

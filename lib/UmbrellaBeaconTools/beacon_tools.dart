@@ -49,12 +49,6 @@ abstract class Beacon {
         beaconList.add(eddystoneBeacon);
       }
 
-      IBeacon iBeacon = IBeacon.fromScanResult(scanResult);
-      if(iBeacon != null) {
-        debugPrint("iBeacon beacon found!");
-        beaconList.add(iBeacon);
-      }
-
     } on Exception catch(e) {
         print("ERROR: " + e.toString());
     }
@@ -141,82 +135,3 @@ class EddystoneUID extends Eddystone {
       ]);
 }
 
-// ! Below are resources for how the iBeacon advertising packet is structured
-// * https://support.kontakt.io/hc/en-gb/articles/201492492-iBeacon-advertising-packet-structure
-// * https://stackoverflow.com/questions/18906988/what-is-the-ibeacon-bluetooth-profile/19040616#19040616
-
-class IBeacon extends Beacon {
-  final String uuid;
-  final int major;
-  final int minor;
-
-  const IBeacon(
-      {@required this.uuid,
-      @required this.major,
-      @required this.minor,
-      @required int tx,
-      @required ScanResult scanResult})
-      : super(tx: tx, scanResult: scanResult);
-
-  factory IBeacon.fromScanResult(ScanResult scanResult) {
-
-    //print("Scanning for iBeacon");
-
-    Uint8List manuData = scanResult.advertisementData.manufacturerData;
-
-    if(manuData == null) {
-      return null;
-    }
-
-    // Find the index where the iBeacon manufacturer id is contained
-    int manufacturerIdIndex = scanResult.advertisementData.manufacturerData
-        .indexWhere((value) => value == IBeaconManufacturerId);
-    //print("Index of iBeacon manufacturer id: " + manufacturerIdIndex.toString());
-
-    if (scanResult.advertisementData.manufacturerData.length -
-            manufacturerIdIndex +
-            2 <
-        23) {
-      return null;
-    }
-
-    if (scanResult
-                .advertisementData.manufacturerData[manufacturerIdIndex + 2] !=
-            0x02 ||
-        scanResult
-                .advertisementData.manufacturerData[manufacturerIdIndex + 3] !=
-            0x15) {
-      return null;
-    }
-    
-   List<int> rawBytes = scanResult.advertisementData.manufacturerData
-        .sublist(manufacturerIdIndex);
-    var uuid = byteListToHexString(rawBytes.sublist(4, 20));
-    //print("uuid: " + uuid);
-    var major = twoByteToInt16(rawBytes[20], rawBytes[21]);
-    //print("major: " + major.toString());
-    var minor = twoByteToInt16(rawBytes[22], rawBytes[23]);
-    //print("minor: " + minor.toString());
-    var tx = byteToInt8(rawBytes[24]);
-    //print("tx power: " + tx.toString());
-
-    print("iBeacon detected!");
-
-    return IBeacon(
-      uuid: uuid,
-      major: major,
-      minor: minor,
-      tx: tx,
-      scanResult: scanResult,
-    );
-  }
-
-  int get hash => hashObjects([
-        "IBeacon",
-        IBeaconManufacturerId,
-        this.uuid,
-        this.major,
-        this.minor,
-        this.tx
-      ]);
-}
