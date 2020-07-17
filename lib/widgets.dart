@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Model/User.dart';
-import 'UmbrellaBeaconTools/beacon_tools.dart';
+import 'UmbrellaBeaconTools/BeaconTools.dart';
 import 'Model/Post.dart';
 
 class EddystoneUIDCard extends StatelessWidget {

@@ -7,12 +7,11 @@ import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:umbrella/Model/User.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:umbrella/widgets.dart';
-import 'package:umbrella/utils.dart';
-import 'package:umbrella/UmbrellaBeaconTools/umbrella_beacon.dart';
+import 'package:umbrella/UmbrellaBeaconTools/UmbrellaBeacon.dart';
 import 'package:beacon_broadcast/beacon_broadcast.dart';
-import 'package:uuid/uuid.dart';
+
+import '../styles.dart';
 
 var firestoreReference = Firestore.instance;
 String beaconStatusMessage;
@@ -41,6 +40,10 @@ class NearbyScreenState extends State<NearbyScreen> {
   @override
   void initState() {
     super.initState();
+
+    AppStateModel appStateModel = AppStateModel.instance;
+    
+    appStateModel.init();
 
     bleManager.createClient();
 
@@ -141,13 +144,25 @@ class NearbyScreenState extends State<NearbyScreen> {
     tiles = _buildScanResultTiles();
 
     return Scaffold(
+        appBar: new AppBar(
+          backgroundColor: createMaterialColor(Color(0xFFE8E6D9)),
+          centerTitle: true,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const Text(
+                'Umbrella',
+                style: TextStyle(color: Colors.black),
+              ),
+              const Image(image: AssetImage('assets/icons8-umbrella-24.png'))
+            ],
+          ),
+        ),
       body: new Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           (isScanning) ? _buildProgressBarTile() : new Container(),
-          new SubtitleBar(
-              left: AppStateModel.instance.getUser().userName, right: "5"),
           Expanded(
             child: new ListView(
               children: tiles,
@@ -171,15 +186,6 @@ startBeaconBroadcast() async {
       // ! EDDYSTONE DOESNT HAVE MAJOR & MINOR VALUES! IBEACON DOES! HENCE THE NO WORKING!
       // ! https://www.beaconzone.co.uk/choosinguuidmajorminor
       // ! https://github.com/google/eddystone/issues/188
-      if (Platform.isIOS) {
-        beaconBroadcast
-            .setUUID(AppStateModel.instance.getIBeaconUUID())
-            .setMajorId(1)
-            .setMinorId(100)
-            .start();
-
-        print("Attempting to start Beacon broadcast...");
-      }
 
       if (Platform.isAndroid) {
         //! Note: BeaconBroadcast doesnt have specific Eddystone methods,

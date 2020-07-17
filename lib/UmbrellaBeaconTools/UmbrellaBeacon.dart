@@ -1,8 +1,8 @@
 library umbrella_beacon;
 
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
-import 'beacon_tools.dart';
-export 'beacon_tools.dart';
+import 'BeaconTools.dart';
+export 'BeaconTools.dart';
 
 class UmbrellaBeacon {
   // Singleton

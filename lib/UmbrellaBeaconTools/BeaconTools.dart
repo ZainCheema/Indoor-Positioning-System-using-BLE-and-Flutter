@@ -2,14 +2,13 @@ import 'dart:typed_data';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
-import 'package:umbrella/UmbrellaBeaconTools/umbrella_beacon.dart';
+import 'package:umbrella/UmbrellaBeaconTools/UmbrellaBeacon.dart';
 import 'dart:math';
 import 'package:umbrella/utils.dart';
 import 'package:quiver/core.dart';
 export 'package:flutter_ble_lib/flutter_ble_lib.dart' show ScanResult;
 
 const EddystoneServiceId = "0000feaa-0000-1000-8000-00805f9b34fb";
-const IBeaconManufacturerId = 0x004C;
 
 List<Beacon> beaconList = new List();
 

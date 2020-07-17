@@ -10,7 +10,7 @@ import 'Model/AppStateModel.dart';
 class UmbrellaMain extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(title: 'Umbrella', home: BottomNav());
+    return MaterialApp(title: 'Umbrella', home: NearbyScreen());
   }
 }
 
@@ -24,7 +24,7 @@ class BottomNav extends StatefulWidget {
 class BottomNavState extends State<BottomNav> {
   int _selectedIndex = 0;
   static List<Widget> _widgetOptions = <Widget>[
-    FeedScreen(),
+    //FeedScreen(),
     NearbyScreen(),
   ];
 
@@ -34,14 +34,6 @@ class BottomNavState extends State<BottomNav> {
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-
-    AppStateModel appStateModel = AppStateModel.instance;
-    
-    appStateModel.init();
-  }
 
   @override
   Widget build(BuildContext context) {

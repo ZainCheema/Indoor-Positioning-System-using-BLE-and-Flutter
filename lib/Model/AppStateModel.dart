@@ -95,10 +95,7 @@ class AppStateModel extends foundation.ChangeNotifier {
       }
 
       FlutterCompass.events.listen((double direction) async {
-        debugPrint('Converted direction: ' + direction.round().toString());
         String facing = angleToClockFace(direction.round());
-        debugPrint(direction.toString());
-        debugPrint(userName + " facing " + facing + " O'Clock");
 
         Map<String, dynamic> userJson = {
           'UUID': userId,
