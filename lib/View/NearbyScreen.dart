@@ -16,6 +16,8 @@ import '../styles.dart';
 var firestoreReference = Firestore.instance;
 String beaconStatusMessage;
 
+  BleManager bleManager = BleManager();
+
 class NearbyScreen extends StatefulWidget {
   @override
   NearbyScreenState createState() {
@@ -25,8 +27,6 @@ class NearbyScreen extends StatefulWidget {
 
 class NearbyScreenState extends State<NearbyScreen> {
   UmbrellaBeacon umbrellaBeacon = UmbrellaBeacon.instance;
-
-  BleManager bleManager = BleManager();
 
   // Scanning
   StreamSubscription _scanSubscription;
@@ -45,6 +45,8 @@ class NearbyScreenState extends State<NearbyScreen> {
     
     appStateModel.init();
 
+
+    //bleManager.setLogLevel(LogLevel.verbose);
     bleManager.createClient();
 
     // Subscribe to state changes
@@ -53,6 +55,7 @@ class NearbyScreenState extends State<NearbyScreen> {
         state = s;
         debugPrint("Bluetooth State changed");
         if (state == BluetoothState.POWERED_ON) {
+          debugPrint("Bluetooth is on");
           startBeaconBroadcast();
           _startScan();
         }
@@ -89,10 +92,6 @@ class NearbyScreenState extends State<NearbyScreen> {
         beacons[beacon.hash] = beacon;
       });
     }, onDone: _stopScan);
-
-    setState(() {
-      isScanning = true;
-    });
   }
 
   _stopScan() {
@@ -112,6 +111,7 @@ class NearbyScreenState extends State<NearbyScreen> {
 
       return beacons.values.map<Widget>((b) {
         if (b is EddystoneUID) {
+          debugPrint("EddyStone beacon was found!");
           for (var pUser in allUsers) {
             if (pUser.uuid == b.namespaceId) {
               debugPrint("User " + pUser.userName + " is nearby!");
@@ -133,15 +133,11 @@ class NearbyScreenState extends State<NearbyScreen> {
   Widget build(BuildContext context) {
     var tiles = new List<Widget>();
 
-    tiles.add(buildAlertTile(context, beaconStatusMessage));
-
     if (state != BluetoothState.POWERED_ON) {
       tiles.add(buildAlertTile(context, state.toString().substring(15)));
     }
 
     tiles.addAll(_buildScanResultTiles());
-
-    tiles = _buildScanResultTiles();
 
     return Scaffold(
         appBar: new AppBar(
@@ -194,7 +190,7 @@ startBeaconBroadcast() async {
 
         // TODO: (Low Priority) Rename BroadcastBeacon methods to make more sense for a specific platform
         beaconBroadcast
-            .setUUID(AppStateModel.instance.getUser().uuid)
+            .setUUID('39ED98FF-2900-441A-802F-9C398FC199D2')
             .setMajorId(randomNumber(1, 99))
             .setMinorId(100)
             .start();

@@ -40,6 +40,7 @@ abstract class Beacon {
   // Returns the first found beacon protocol in one device
   static List<Beacon> fromScanResult(ScanResult scanResult) {
    // print("Started peripheral scan");
+     print("Scanned Peripheral ${scanResult.peripheral.name}, RSSI ${scanResult.rssi}");
 
     try {
       EddystoneUID eddystoneBeacon = EddystoneUID.fromScanResult(scanResult);
@@ -87,19 +88,23 @@ class EddystoneUID extends Eddystone {
    print("Scanning for Eddystone beacon");
 
     if(scanResult.advertisementData.serviceData == null) {
+      debugPrint("Service data is null");
       return null;
     }
 
     if (!scanResult.advertisementData.serviceData
         .containsKey(EddystoneServiceId)) {
+          debugPrint("Service Data doesnt contain beacon ID");
       return null;
     }
     if (scanResult.advertisementData.serviceData[EddystoneServiceId].length <
         18) {
+          debugPrint('Nope');
       return null;
     }
     if (scanResult.advertisementData.serviceData[EddystoneServiceId][0] !=
         0x00) {
+          debugPrint("nuh uh");
       return null;
     }
 

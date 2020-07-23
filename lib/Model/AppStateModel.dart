@@ -149,7 +149,7 @@ class AppStateModel extends foundation.ChangeNotifier {
       'Direction': user.direction
     });
 
- //   debugPrint("User uploaded!");
+   debugPrint("User uploaded!");
   }
 
   void streamUsers() {
