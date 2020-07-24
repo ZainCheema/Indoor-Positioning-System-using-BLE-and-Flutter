@@ -8,7 +8,7 @@ class User {
   final String uuid;
   final String facing;
   final double distance;
-  final double direction;
+  final int direction;
 
   factory User.fromJson(Map<dynamic, dynamic> json) {
     return User(
@@ -16,8 +16,7 @@ class User {
       uuid: json['UUID'],
       facing: json['Facing'],
       distance: 0,
-      direction: json['Direction']
-
+      direction: 0
     );
   }
 

@@ -1,16 +1,13 @@
 import 'dart:async';
-import 'dart:math';
 import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' as foundation;
-import 'package:umbrella/Model/Post.dart';
 import 'package:uuid/uuid.dart';
 import 'User.dart';
-import 'package:umbrella/utils.dart';
 import 'package:random_words/random_words.dart';
-import 'package:flutter_compass/flutter_compass.dart';
 
 class AppStateModel extends foundation.ChangeNotifier {
   // Singleton
@@ -28,16 +25,12 @@ class AppStateModel extends foundation.ChangeNotifier {
 
   // User of the app.
   User user;
-
-  String iBeaconUUID;
-
+  
   // A list of all users in the app.
   List<User> allUsers;
 
   // All nearby users.
   List<User> nearbyUsers;
-
-  List<Post> initialPosts;
 
   CollectionReference userPath = Firestore.instance
       .collection('Country')
@@ -55,9 +48,8 @@ class AppStateModel extends foundation.ChangeNotifier {
 
   Stream<QuerySnapshot> userSnapshots;
 
+  // ignore: cancel_subscriptions
   StreamSubscription usersStream;
-
-  Stream<QuerySnapshot> postSnapshots;
 
   @override
   void notifyListeners() {
@@ -73,10 +65,12 @@ class AppStateModel extends foundation.ChangeNotifier {
     nearbyUsers = new List<User>();
 
     if (wifiEnabled & bluetoothEnabled & gpsEnabled) {
-      String userName = generateWordPairs().take(1).elementAt(0).toString();
+      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+      String userName = androidInfo.model.toString();
+      print('Running on $userName');
 
       String userId = uuid.v1().toString();
-      iBeaconUUID = userId;
       userId = userId.replaceAll(RegExp('-'), '');
 
       if (Platform.isAndroid) {
@@ -94,49 +88,30 @@ class AppStateModel extends foundation.ChangeNotifier {
         }
       }
 
-      FlutterCompass.events.listen((double direction) async {
-        String facing = angleToClockFace(direction.round());
+      // FlutterCompass.events.listen((double direction) async {
+      //  // String facing = angleToClockFace(direction.round());
 
-        Map<String, dynamic> userJson = {
+      //   Map<String, dynamic> userJson = {
+      //     'UUID': userId,
+      //     'UserName': userName,
+      //     'Facing': "",
+      //     'Direction': 0
+      //   };
+
+      //   uploadUser(userJson);
+      // });
+
+              Map<String, dynamic> userJson = {
           'UUID': userId,
           'UserName': userName,
-          'Facing': facing,
-          'Direction': direction
+          'Facing': "",
+          'Direction': 0
         };
 
         uploadUser(userJson);
-      });
 
       streamUsers();
-
-      postSnapshots = Firestore.instance.collection(postPath.path).snapshots();
     }
-  }
-
-  void loadPosts() {
-    debugPrint("loadPosts() called");
-    List<Post> initialPosts = new List<Post>();
-    postSnapshots.forEach((snapshot) =>
-      snapshot.documents.forEach((document) =>
-        initialPosts.add(Post.fromJson(document.data))
-      )
-    );
-    setPosts(initialPosts);
-  }
-
-
-  void setPosts(List<Post> posts) {
-    initialPosts = List.from(posts);
-  }
-
-  List<Post> getPosts() {
-    return initialPosts;
-  }
-
-  void loadNearbyUsers() {}
-
-  void addNearbyUser(User pUser) {
-    nearbyUsers.add(pUser);
   }
 
   void uploadUser(Map<String, dynamic> json) async {
@@ -166,10 +141,6 @@ class AppStateModel extends foundation.ChangeNotifier {
     });
   }
 
-  List<User> getNearbyUsers() {
-    return nearbyUsers;
-  }
-
   List<User> getAllUsers() {
     return allUsers;
   }
@@ -178,15 +149,8 @@ class AppStateModel extends foundation.ChangeNotifier {
     return user;
   }
 
-  String getIBeaconUUID() {
-    return iBeaconUUID;
-  }
 
   CollectionReference getPostPath() {
     return postPath;
   }
-
-  void removeUser() {}
-
-  void getNearbyUser() {}
 }

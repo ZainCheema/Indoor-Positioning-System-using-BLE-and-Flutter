@@ -16,17 +16,21 @@ import '../styles.dart';
 var firestoreReference = Firestore.instance;
 String beaconStatusMessage;
 
-  BleManager bleManager = BleManager();
-
 class NearbyScreen extends StatefulWidget {
   @override
   NearbyScreenState createState() {
+    AppStateModel appStateModel = AppStateModel.instance;
+    
+    appStateModel.init();
+
     return NearbyScreenState();
   }
 }
 
 class NearbyScreenState extends State<NearbyScreen> {
   UmbrellaBeacon umbrellaBeacon = UmbrellaBeacon.instance;
+
+  BleManager bleManager = BleManager();
 
   // Scanning
   StreamSubscription _scanSubscription;
@@ -40,10 +44,6 @@ class NearbyScreenState extends State<NearbyScreen> {
   @override
   void initState() {
     super.initState();
-
-    AppStateModel appStateModel = AppStateModel.instance;
-    
-    appStateModel.init();
 
 
     //bleManager.setLogLevel(LogLevel.verbose);
@@ -85,6 +85,8 @@ class NearbyScreenState extends State<NearbyScreen> {
 
     if (bleManager == null || umbrellaBeacon == null) {
       print('BleManager is null!!!');
+    } else {
+      isScanning = true;
     }
 
     _scanSubscription = umbrellaBeacon.scan(bleManager).listen((beacon) {
@@ -104,9 +106,9 @@ class NearbyScreenState extends State<NearbyScreen> {
   }
 
   _buildScanResultTiles() {
-    print("_buildScanResultTiles() entered");
+   // print("_buildScanResultTiles() entered");
     List<User> allUsers = AppStateModel.instance.getAllUsers();
-    debugPrint("All Users: " + allUsers.length.toString());
+   // debugPrint("All Users: " + allUsers.length.toString());
     List<User> nearbyUsers = new List<User>();
 
       return beacons.values.map<Widget>((b) {
@@ -133,9 +135,8 @@ class NearbyScreenState extends State<NearbyScreen> {
   Widget build(BuildContext context) {
     var tiles = new List<Widget>();
 
-    if (state != BluetoothState.POWERED_ON) {
-      tiles.add(buildAlertTile(context, state.toString().substring(15)));
-    }
+      tiles.add(buildAlertTile(context, beaconStatusMessage));
+  
 
     tiles.addAll(_buildScanResultTiles());
 
@@ -176,6 +177,7 @@ startBeaconBroadcast() async {
   var transmissionSupportStatus =
       await beaconBroadcast.checkTransmissionSupported();
   switch (transmissionSupportStatus) {
+    
     case BeaconStatus.SUPPORTED:
       print("Beacon advertising is supported on this device");
 
@@ -187,10 +189,11 @@ startBeaconBroadcast() async {
         //! Note: BeaconBroadcast doesnt have specific Eddystone methods,
         //! so setMajorId() is actually setting the beaconID.
         //! only the first 20 chars of the uuid will be used for its NamespaceID, the rest is discarded.
+        debugPrint("User beacon uuid: " + AppStateModel.instance.getUser().uuid);
 
         // TODO: (Low Priority) Rename BroadcastBeacon methods to make more sense for a specific platform
         beaconBroadcast
-            .setUUID('39ED98FF-2900-441A-802F-9C398FC199D2')
+            .setUUID(AppStateModel.instance.getUser().uuid)
             .setMajorId(randomNumber(1, 99))
             .setMinorId(100)
             .start();
@@ -201,6 +204,7 @@ startBeaconBroadcast() async {
         print(beaconStatusMessage);
       });
       break;
+
     case BeaconStatus.NOT_SUPPORTED_MIN_SDK:
       beaconStatusMessage =
           "Your Android system version is too low (min. is 21)";
