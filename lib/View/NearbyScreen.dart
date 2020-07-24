@@ -191,12 +191,11 @@ startBeaconBroadcast() async {
         //! only the first 20 chars of the uuid will be used for its NamespaceID, the rest is discarded.
         debugPrint("User beacon uuid: " + AppStateModel.instance.getUser().uuid);
 
-        // TODO: (Low Priority) Rename BroadcastBeacon methods to make more sense for a specific platform
         beaconBroadcast
             .setUUID(AppStateModel.instance.getUser().uuid)
             .setMajorId(randomNumber(1, 99))
-            .setMinorId(100)
-            .start();
+    .setLayout(BeaconBroadcast.EDDYSTONE_UID_LAYOUT) //Android-only, optional
+    .start();
       }
 
       beaconBroadcast.getAdvertisingStateChange().listen((isAdvertising) {

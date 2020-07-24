@@ -92,14 +92,14 @@ class UserCard extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Align(
                   alignment: Alignment.topRight,
-                  child: Text("w2")),
+                  child: Text(user.uuid)),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  "w2",
+                  user.userName,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
               ),
@@ -108,7 +108,7 @@ class UserCard extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Align(
                 alignment: Alignment.bottomRight,
-                child: Text('w2'),
+                child: Text(user.distance.toString() + "m"),
               ),
             )
           ],
