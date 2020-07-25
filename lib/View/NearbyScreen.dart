@@ -181,10 +181,6 @@ startBeaconBroadcast() async {
     case BeaconStatus.SUPPORTED:
       print("Beacon advertising is supported on this device");
 
-      // ! EDDYSTONE DOESNT HAVE MAJOR & MINOR VALUES! IBEACON DOES! HENCE THE NO WORKING!
-      // ! https://www.beaconzone.co.uk/choosinguuidmajorminor
-      // ! https://github.com/google/eddystone/issues/188
-
       if (Platform.isAndroid) {
         //! Note: BeaconBroadcast doesnt have specific Eddystone methods,
         //! so setMajorId() is actually setting the beaconID.
@@ -194,8 +190,8 @@ startBeaconBroadcast() async {
         beaconBroadcast
             .setUUID(AppStateModel.instance.getUser().uuid)
             .setMajorId(randomNumber(1, 99))
-    .setLayout(BeaconBroadcast.EDDYSTONE_UID_LAYOUT) //Android-only, optional
-    .start();
+            .setLayout(BeaconBroadcast.EDDYSTONE_UID_LAYOUT) //Android-only, optional
+            .start();
       }
 
       beaconBroadcast.getAdvertisingStateChange().listen((isAdvertising) {

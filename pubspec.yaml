@@ -36,6 +36,10 @@ dependencies:
   rxdart: ^0.23.1
   device_info: ^0.4.2+4
   sensors: ^0.4.2+2
+  permission_handler: ^4.4.0+hotfix.2
+  android_intent: 0.3.7+2
+  wakelock: 0.1.4+2
+  connectivity: 0.4.9
 
 dev_dependencies:
   flutter_test:

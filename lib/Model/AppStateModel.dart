@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' as foundation;
+import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
 import 'User.dart';
 import 'package:random_words/random_words.dart';
@@ -17,15 +18,17 @@ class AppStateModel extends foundation.ChangeNotifier {
 
   static AppStateModel get instance => _instance;
 
-  bool wifiEnabled = true;
-  bool gpsEnabled = true;
-  bool bluetoothEnabled = true;
+  bool wifiEnabled = false;
+  bool gpsEnabled = false;
+  bool bluetoothEnabled = false;
+
+  PermissionStatus locationPermissionStatus = PermissionStatus.unknown;
 
   Uuid uuid = new Uuid();
 
   // User of the app.
   User user;
-  
+
   // A list of all users in the app.
   List<User> allUsers;
 
@@ -38,13 +41,6 @@ class AppStateModel extends foundation.ChangeNotifier {
       .collection('Street')
       .document('Users')
       .collection('User');
-
-  CollectionReference postPath = Firestore.instance
-      .collection('Country')
-      .document('City')
-      .collection('Street')
-      .document('Posts')
-      .collection('Post');
 
   Stream<QuerySnapshot> userSnapshots;
 
@@ -101,14 +97,14 @@ class AppStateModel extends foundation.ChangeNotifier {
       //   uploadUser(userJson);
       // });
 
-              Map<String, dynamic> userJson = {
-          'UUID': userId,
-          'UserName': userName,
-          'Facing': "",
-          'Direction': 0
-        };
+      Map<String, dynamic> userJson = {
+        'UUID': userId,
+        'UserName': userName,
+        'Facing': "",
+        'Direction': 0
+      };
 
-        uploadUser(userJson);
+      uploadUser(userJson);
 
       streamUsers();
     }
@@ -124,20 +120,20 @@ class AppStateModel extends foundation.ChangeNotifier {
       'Direction': user.direction
     });
 
-   debugPrint("User uploaded!");
+    debugPrint("User uploaded!");
   }
 
   void streamUsers() {
     userSnapshots = Firestore.instance.collection(userPath.path).snapshots();
 
     usersStream = userSnapshots.listen((s) {
-    //  debugPrint("USER ADDED");
+      //  debugPrint("USER ADDED");
       allUsers.clear();
       for (var document in s.documents) {
         allUsers = List.from(allUsers);
         allUsers.add(User.fromJson(document.data));
       }
- //     debugPrint("ALL USERS: " + allUsers.length.toString());
+      //     debugPrint("ALL USERS: " + allUsers.length.toString());
     });
   }
 
@@ -149,8 +145,16 @@ class AppStateModel extends foundation.ChangeNotifier {
     return user;
   }
 
+  Future<void> _checkPermissions() async {
+    if (Platform.isAndroid) {
+      var permissionStatus = await PermissionHandler()
+          .requestPermissions([PermissionGroup.location]);
 
-  CollectionReference getPostPath() {
-    return postPath;
+      locationPermissionStatus = permissionStatus[PermissionGroup.location];
+
+      if (locationPermissionStatus != PermissionStatus.granted) {
+        return Future.error(Exception("Location permission not granted"));
+      }
+    }
   }
 }

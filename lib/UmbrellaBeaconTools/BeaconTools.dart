@@ -94,17 +94,14 @@ class EddystoneUID extends Eddystone {
 
     if (!scanResult.advertisementData.serviceData
         .containsKey(EddystoneServiceId)) {
-          debugPrint("Service Data doesnt contain beacon ID");
       return null;
     }
     if (scanResult.advertisementData.serviceData[EddystoneServiceId].length <
         18) {
-          debugPrint('Nope');
       return null;
     }
     if (scanResult.advertisementData.serviceData[EddystoneServiceId][0] !=
         0x00) {
-          debugPrint("nuh uh");
       return null;
     }
 
@@ -119,7 +116,7 @@ class EddystoneUID extends Eddystone {
     var namespaceId = byteListToHexString(rawBytes.sublist(2, 12));
    // print("namespace id: " + namespaceId);
     var beaconId = byteListToHexString(rawBytes.sublist(12, 18));
-      print("beacon id: " + beaconId);
+   //   print("beacon id: " + beaconId);
 
     return EddystoneUID(
         frameType: frameType,
