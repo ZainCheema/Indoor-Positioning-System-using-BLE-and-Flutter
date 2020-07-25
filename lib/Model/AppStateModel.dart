@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:beacon_broadcast/beacon_broadcast.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' as foundation;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
+import '../utils.dart';
 import 'User.dart';
-import 'package:random_words/random_words.dart';
-
 class AppStateModel extends foundation.ChangeNotifier {
   // Singleton
   AppStateModel._();
@@ -25,6 +25,10 @@ class AppStateModel extends foundation.ChangeNotifier {
   bool goodToStart = false;
 
   PermissionStatus locationPermissionStatus = PermissionStatus.unknown;
+
+  BeaconBroadcast beaconBroadcast = new BeaconBroadcast();
+  String beaconStatusMessage;
+  bool isBroadcasting = false;
 
   Uuid uuid = new Uuid();
 
@@ -164,4 +168,54 @@ class AppStateModel extends foundation.ChangeNotifier {
       }
     }
   }
+
+  startBeaconBroadcast() async {
+  BeaconBroadcast beaconBroadcast = BeaconBroadcast();
+
+  var transmissionSupportStatus =
+      await beaconBroadcast.checkTransmissionSupported();
+  switch (transmissionSupportStatus) {
+    
+    case BeaconStatus.SUPPORTED:
+      print("Beacon advertising is supported on this device");
+
+      if (Platform.isAndroid) {
+        debugPrint("User beacon uuid: " + AppStateModel.instance.getUser().uuid);
+
+        beaconBroadcast
+            .setUUID(AppStateModel.instance.getUser().uuid)
+            .setMajorId(randomNumber(1, 99))
+            .setLayout(BeaconBroadcast.EDDYSTONE_UID_LAYOUT) //Android-only, optional
+            .start();
+      }
+
+      beaconBroadcast.getAdvertisingStateChange().listen((isAdvertising) {
+        beaconStatusMessage = "Beacon is now advertising";
+     //   isBroadcasting = true;
+      });
+      break;
+
+    case BeaconStatus.NOT_SUPPORTED_MIN_SDK:
+      beaconStatusMessage =
+          "Your Android system version is too low (min. is 21)";
+        print(beaconStatusMessage);
+      break;
+    case BeaconStatus.NOT_SUPPORTED_BLE:
+      beaconStatusMessage = "Your device doesn't support BLE";
+      print(beaconStatusMessage);
+      break;
+    case BeaconStatus.NOT_SUPPORTED_CANNOT_GET_ADVERTISER:
+      beaconStatusMessage = "Either your chipset or driver is incompatible";
+      print(beaconStatusMessage);
+      break;
+  }
+}
+
+stopBeaconBroadcast() {
+  beaconStatusMessage = "Beacon has stopped advertising";
+  beaconBroadcast.stop();
+  //isBroadcasting = false;
+  print(beaconStatusMessage);
+}
+
 }

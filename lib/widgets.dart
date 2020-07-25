@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'Model/User.dart';
 import 'Model/BeaconInfo.dart';
-import 'UmbrellaBeaconTools/BeaconTools.dart';
 
 class BeaconInfoContainer extends StatelessWidget {
   final BeaconInfo beaconInfo;
@@ -86,7 +85,7 @@ buildAlertTile(BuildContext context, String message) {
     color: Colors.redAccent,
     child: new ListTile(
       title: new Text(
-        'Bluetooth adapter is ${message}',
+        message,
         style: Theme.of(context).primaryTextTheme.subhead,
       ),
       trailing: new Icon(
@@ -96,3 +95,29 @@ buildAlertTile(BuildContext context, String message) {
     ),
   );
 }
+
+showGenericDialog(BuildContext context, String title, String body) {
+        if (Theme.of(context).platform == TargetPlatform.android) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text(title),
+                content:
+                    Text(body),
+                actions: <Widget>[
+                  FlatButton(
+                      child: Text('OK'),
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).pop();
+                      })
+                ],
+              );
+            });
+      }
+}
+
+
+  buildProgressBarTile() {
+    return new LinearProgressIndicator();
+  }

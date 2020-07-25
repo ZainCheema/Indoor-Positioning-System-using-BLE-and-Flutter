@@ -15,11 +15,12 @@ import '../styles.dart';
 
 var firestoreReference = Firestore.instance;
 String beaconStatusMessage;
+AppStateModel appStateModel;
 
 class NearbyScreen extends StatefulWidget {
   @override
   NearbyScreenState createState() {
-    AppStateModel appStateModel = AppStateModel.instance;
+    appStateModel = AppStateModel.instance;
     
     appStateModel.init();
 
@@ -56,7 +57,7 @@ class NearbyScreenState extends State<NearbyScreen> {
         debugPrint("Bluetooth State changed");
         if (state == BluetoothState.POWERED_ON) {
           debugPrint("Bluetooth is on");
-          startBeaconBroadcast();
+      //    startBeaconBroadcast();
           _startScan();
         }
       });
@@ -74,11 +75,11 @@ class NearbyScreenState extends State<NearbyScreen> {
     super.dispose();
   }
 
-  _clearAllBeacons() {
-    setState(() {
-      beacons = Map<int, Beacon>();
-    });
-  }
+  // _clearAllBeacons() {
+  //   setState(() {
+  //     beacons = Map<int, Beacon>();
+  //   });
+  // }
 
   _startScan() {
     print("Scanning now");
@@ -121,21 +122,17 @@ class NearbyScreenState extends State<NearbyScreen> {
               return UserCard(user: pUser);
             }
           }
-        //  return EddystoneUIDCard(eddystoneUID: b);
         }
         return Card();
       }).toList();
   }
 
-  _buildProgressBarTile() {
-    return new LinearProgressIndicator();
-  }
 
   @override
   Widget build(BuildContext context) {
     var tiles = new List<Widget>();
 
-      tiles.add(buildAlertTile(context, beaconStatusMessage));
+      tiles.add(buildAlertTile(context, appStateModel.beaconStatusMessage));
   
 
     tiles.addAll(_buildScanResultTiles());
@@ -159,7 +156,7 @@ class NearbyScreenState extends State<NearbyScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          (isScanning) ? _buildProgressBarTile() : new Container(),
+          (isScanning) ? buildProgressBarTile() : new Container(),
           Expanded(
             child: new ListView(
               children: tiles,
@@ -171,47 +168,3 @@ class NearbyScreenState extends State<NearbyScreen> {
   }
 }
 
-startBeaconBroadcast() async {
-  BeaconBroadcast beaconBroadcast = BeaconBroadcast();
-
-  var transmissionSupportStatus =
-      await beaconBroadcast.checkTransmissionSupported();
-  switch (transmissionSupportStatus) {
-    
-    case BeaconStatus.SUPPORTED:
-      print("Beacon advertising is supported on this device");
-
-      if (Platform.isAndroid) {
-        //! Note: BeaconBroadcast doesnt have specific Eddystone methods,
-        //! so setMajorId() is actually setting the beaconID.
-        //! only the first 20 chars of the uuid will be used for its NamespaceID, the rest is discarded.
-        debugPrint("User beacon uuid: " + AppStateModel.instance.getUser().uuid);
-
-        beaconBroadcast
-            .setUUID(AppStateModel.instance.getUser().uuid)
-            .setMajorId(randomNumber(1, 99))
-            .setLayout(BeaconBroadcast.EDDYSTONE_UID_LAYOUT) //Android-only, optional
-            .start();
-      }
-
-      beaconBroadcast.getAdvertisingStateChange().listen((isAdvertising) {
-        beaconStatusMessage = "Beacon is now advertising";
-        print(beaconStatusMessage);
-      });
-      break;
-
-    case BeaconStatus.NOT_SUPPORTED_MIN_SDK:
-      beaconStatusMessage =
-          "Your Android system version is too low (min. is 21)";
-        print(beaconStatusMessage);
-      break;
-    case BeaconStatus.NOT_SUPPORTED_BLE:
-      beaconStatusMessage = "Your device doesn't support BLE";
-      print(beaconStatusMessage);
-      break;
-    case BeaconStatus.NOT_SUPPORTED_CANNOT_GET_ADVERTISER:
-      beaconStatusMessage = "Either your chipset or driver is incompatible";
-      print(beaconStatusMessage);
-      break;
-  }
-}
