@@ -121,7 +121,7 @@ class NearbyScreenState extends State<NearbyScreen> {
               return UserCard(user: pUser);
             }
           }
-          return EddystoneUIDCard(eddystoneUID: b);
+        //  return EddystoneUIDCard(eddystoneUID: b);
         }
         return Card();
       }).toList();

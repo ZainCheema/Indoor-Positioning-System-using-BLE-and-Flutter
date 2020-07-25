@@ -1,17 +1,16 @@
+import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:umbrella/View/NearbyScreen.dart';
+import 'package:umbrella/Model/AppStateModel.dart';
+import 'package:umbrella/Model/BeaconInfo.dart';
+import 'package:umbrella/widgets.dart';
 import '../styles.dart';
 
+bool isBroadcasting = false;
 
-// openScreen() {
-//                 Navigator.push(
-//                 context,
-//                 MaterialPageRoute(builder: (context) => NearbyScreen()),
-//               );
-// }
-
-
+AppStateModel appStateModel = AppStateModel.instance;
+String phoneMake = "";
+BeaconInfo bc;
 
 class OpeningScreen extends StatefulWidget {
   @override
@@ -24,7 +23,49 @@ class OpeningScreenState extends State<OpeningScreen> {
   @override
   void initState() {
     super.initState();
+    print("Showing Opening Screen");
+
+    bc = new BeaconInfo(
+        phoneMake: phoneMake,
+        beaconUUID: "",
+        txPower: "-59",
+        standardBroadcasting: "Eddystone");
+
+    getBeaconInfo();
   }
+
+  getBeaconInfo() async {
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    setState(() {
+      phoneMake = androidInfo.model.toString();
+
+      bc = new BeaconInfo(
+          phoneMake: phoneMake,
+          beaconUUID: appStateModel.user.uuid,
+          txPower: "-59",
+          standardBroadcasting: "Eddystone");
+    });
+  }
+
+  buildScanButton() {
+    if (isBroadcasting) {
+      return new FloatingActionButton(
+        child: new Icon(Icons.stop),
+        backgroundColor: Colors.red,
+        onPressed: stopBeaconBroadcast(),
+      );
+    } else {
+      return new FloatingActionButton(
+          child: new Icon(Icons.record_voice_over),
+          backgroundColor: Colors.lightGreen,
+          onPressed: startBeaconBroadcast());
+    }
+  }
+
+  startBeaconBroadcast() {}
+
+  stopBeaconBroadcast() {}
 
   @override
   Widget build(BuildContext context) {
@@ -43,14 +84,10 @@ class OpeningScreenState extends State<OpeningScreen> {
           ],
         ),
       ),
-      body: new Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Center(child: FloatingActionButton(
-              onPressed: null, 
-              child: Text("START"))),
-          ]),
+      floatingActionButton: buildScanButton(),
+      body: new Stack(children: <Widget>[
+        Center(child: BeaconInfoContainer(beaconInfo: bc))
+      ]),
     );
   }
 }

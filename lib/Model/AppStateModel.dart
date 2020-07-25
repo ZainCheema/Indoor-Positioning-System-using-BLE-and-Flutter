@@ -18,13 +18,17 @@ class AppStateModel extends foundation.ChangeNotifier {
 
   static AppStateModel get instance => _instance;
 
-  bool wifiEnabled = false;
-  bool gpsEnabled = false;
-  bool bluetoothEnabled = false;
+  bool wifiEnabled = true;
+  bool gpsEnabled = true;
+  bool bluetoothEnabled = true;
+
+  bool goodToStart = false;
 
   PermissionStatus locationPermissionStatus = PermissionStatus.unknown;
 
   Uuid uuid = new Uuid();
+
+  String phoneMake = "";
 
   // User of the app.
   User user;
@@ -51,7 +55,7 @@ class AppStateModel extends foundation.ChangeNotifier {
   void notifyListeners() {
     super.notifyListeners();
   }
-
+  
   void init() async {
     // This will check wifi, gps and bluetooth
     // If all these checks pass, create the user, then load the nearby users
@@ -64,6 +68,7 @@ class AppStateModel extends foundation.ChangeNotifier {
       DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
       AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
       String userName = androidInfo.model.toString();
+      phoneMake = userName;
       print('Running on $userName');
 
       String userId = uuid.v1().toString();
@@ -104,9 +109,11 @@ class AppStateModel extends foundation.ChangeNotifier {
         'Direction': 0
       };
 
-      uploadUser(userJson);
+      user = new User.fromJson(userJson);
 
-      streamUsers();
+    //  uploadUser(userJson);
+
+      //streamUsers();
     }
   }
 

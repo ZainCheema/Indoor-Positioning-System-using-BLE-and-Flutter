@@ -1,79 +1,44 @@
 import 'package:flutter/material.dart';
 import 'Model/User.dart';
+import 'Model/BeaconInfo.dart';
 import 'UmbrellaBeaconTools/BeaconTools.dart';
 
-class EddystoneUIDCard extends StatelessWidget {
-  final EddystoneUID eddystoneUID;
+class BeaconInfoContainer extends StatelessWidget {
+  final BeaconInfo beaconInfo;
 
-  EddystoneUIDCard({@required this.eddystoneUID});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      child: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Text("EddystoneUID"),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Text("beaconId: ${eddystoneUID.beaconId}"),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Text("namespaceId: ${eddystoneUID.namespaceId}"),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Text("tx: ${eddystoneUID.tx}"),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Text("rssi: ${eddystoneUID.rssi}"),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Text("distance: ${eddystoneUID.distance}"),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class SubtitleBar extends StatelessWidget {
-  final String left;
-  final String right;
-
-  SubtitleBar({@required this.left, @required this.right});
+  BeaconInfoContainer({@required this.beaconInfo});
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.all(8.0),
-      decoration: BoxDecoration(
-          border: Border(bottom: BorderSide(color: Colors.black))),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return new Container(
+      child: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
-            Text(
-              "user: " + left,
-              style: subtitleTextStyle,
+            Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Text(beaconInfo.phoneMake, 
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 40),
+              ),
             ),
-            Text(
-              "Facing "+ right + " O' Clock",
-              style: subtitleTextStyle,
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Text("beaconId: ${beaconInfo.beaconUUID}"),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Text("tx: ${beaconInfo.txPower}"),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(4.0),
+              child: Text("broadcast standard: ${beaconInfo.standardBroadcasting}"),
             ),
           ],
         ),
       ),
     );
   }
-
-  final TextStyle subtitleTextStyle = TextStyle(fontSize: 17);
 }
 
 class UserCard extends StatelessWidget {
