@@ -6,6 +6,7 @@ class RangedBeaconInfo{
   RangedBeaconInfo({
     @required this.phoneMake,
     @required this.beaconUUID,
+    @required this.txAt1Meter,
     @required this.directionFaced,
     @required this.rawRssi,
     @required this.rawRssiStandardDeviation,
@@ -17,6 +18,7 @@ class RangedBeaconInfo{
 
   final String phoneMake;
   final String beaconUUID;
+  final int txAt1Meter;
   final List<double> directionFaced;
   final List<double> rawRssi;
   final List<double> rawRssiStandardDeviation;
@@ -28,6 +30,7 @@ class RangedBeaconInfo{
     Map<dynamic, dynamic> toJson() => {
     'phoneMake': phoneMake,
     'beaconUUID': beaconUUID,
+    'txAt1Meter': txAt1Meter,
     'directionFaced': directionFaced,
     'rawRssi': rawRssi,
     'rawRssiSD': rawRssiStandardDeviation,

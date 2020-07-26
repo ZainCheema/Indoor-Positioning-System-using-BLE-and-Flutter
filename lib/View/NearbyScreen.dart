@@ -135,10 +135,13 @@ class NearbyScreenState extends State<NearbyScreen> {
 
     return beacons.values.map<Widget>((b) {
       if (b is EddystoneUID) {
-     //   debugPrint("EddyStone beacon nearby!");
+        //   debugPrint("EddyStone beacon nearby!");
         for (var pBeacon in regBeacons) {
           if (pBeacon.beaconUUID == b.namespaceId) {
             debugPrint("Beacon " + pBeacon.phoneMake + "+" + pBeacon.beaconUUID + " is nearby!");
+            print("Raw rssi: " + b.rawRssi.toString());
+            print("Filtered rssi: " + b.kfRssi.toString());
+            print("Log distance: " + b.rawLogDistance.toString());
             rangedBeacons.add(pBeacon);
             return RangedBeaconCard(beacon: pBeacon);
           } else {

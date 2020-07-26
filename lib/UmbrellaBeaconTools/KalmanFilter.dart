@@ -1,10 +1,14 @@
-// Adapted from here:
+// Adapted from:
 // https://web.archive.org/web/20140131183356/http://interactive-matter.eu/blog/2009/12/18/filtering-sensor-data-with-a-kalman-filter/
-// https://github.com/bachagas/Kalman/blob/master/Kalman.h
 
 
 class KalmanFilter {
-    KalmanFilter({this.q, this.r, this.x, this.p, this.k});
+    KalmanFilter(double processNoise, double sensorNoise, double estimatedError, double initialValue) {
+      q = processNoise;
+      r = sensorNoise;
+      p = estimatedError;
+      x = initialValue;
+    }
     
     /* Kalman filter variables */
     double q; //process noise covariance
@@ -30,12 +34,6 @@ class KalmanFilter {
         p = estimatedError;
     }
 
-/*
-    void setParameters(double process_noise, double sensor_noise) {
-        q = process_noise;
-        r = sensor_noise;
-    }
- */   
     double getProcessNoise() {
       return q;
     }

@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:umbrella/UmbrellaBeaconTools/KalmanFilter.dart';
+import 'package:umbrella/UmbrellaBeaconTools/LogDistancePathLossModel.dart';
 import 'package:umbrella/UmbrellaBeaconTools/UmbrellaBeacon.dart';
 import 'dart:math';
 import 'package:umbrella/utils.dart';
@@ -16,9 +18,12 @@ abstract class Beacon {
   final int tx;
   final ScanResult scanResult;
 
-  int get rssi => scanResult.rssi;
+  double get rawRssi => scanResult.rssi.toDouble();
+
+  double get kfRssi => KalmanFilter(0.125, 32, 1023, 0).getFilteredValue(rawRssi);
 
   String get name => scanResult.peripheral.name;
+
 
   String get id => scanResult.peripheral.identifier;
 
@@ -26,8 +31,21 @@ abstract class Beacon {
 
   int get txAt1Meter => tx;
 
-  double get distance {
-    double ratio = rssi * 1.0 / (txAt1Meter);
+  double get rawRssiDistance {
+    double ratio = rawRssi * 1.0 / (txAt1Meter);
+    if (ratio < 1.0) {
+      return pow(ratio, 10);
+    } else {
+      return (0.89976) * pow(ratio, 7.7095) + 0.111;
+    }
+  }
+
+  double get rawLogDistance {
+    return LogDistancePathLossModel(kfRssi).getCalculatedDistance();
+  }
+
+  double get kfRssiDistance {
+    double ratio = rawRssi * 1.0 / (txAt1Meter);
     if (ratio < 1.0) {
       return pow(ratio, 10);
     } else {
@@ -37,11 +55,7 @@ abstract class Beacon {
 
   const Beacon({@required this.tx, @required this.scanResult});
 
-  // Returns the first found beacon protocol in one device
   static List<Beacon> fromScanResult(ScanResult scanResult) {
-   // print("Started peripheral scan");
-    // print("Scanned Peripheral ${scanResult.peripheral.name}, RSSI ${scanResult.rssi}");
-
     try {
       EddystoneUID eddystoneBeacon = EddystoneUID.fromScanResult(scanResult);
       if(eddystoneBeacon != null) {

@@ -57,7 +57,7 @@ class BottomNavState extends State<BottomNav> {
             ),
             BottomNavigationBarItem(
               icon: Icon(Icons.directions_walk),
-              title: Text('Motion'),
+              title: Text('Mobile'),
             ),
           ],
           currentIndex: _selectedIndex,

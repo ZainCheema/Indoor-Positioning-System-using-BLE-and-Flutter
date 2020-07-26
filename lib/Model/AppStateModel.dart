@@ -188,6 +188,7 @@ class AppStateModel extends foundation.ChangeNotifier {
           beaconBroadcast
               .setUUID(AppStateModel.instance.getUser().uuid)
               .setMajorId(randomNumber(1, 99))
+              .setTransmissionPower(-59)
               .setLayout(
                   BeaconBroadcast.EDDYSTONE_UID_LAYOUT) //Android-only, optional
               .start();
