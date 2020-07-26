@@ -1,4 +1,6 @@
+import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
+import 'package:umbrella/Model/RangedBeaconInfo.dart';
 import 'Model/User.dart';
 import 'Model/BeaconInfo.dart';
 
@@ -40,10 +42,10 @@ class BeaconInfoContainer extends StatelessWidget {
   }
 }
 
-class UserCard extends StatelessWidget {
-  final User user;
+class RangedBeaconCard extends StatelessWidget {
+  final BeaconInfo beacon;
 
-  UserCard({@required this.user});
+  RangedBeaconCard({@required this.beacon});
 
   @override
   Widget build(BuildContext context) {
@@ -56,14 +58,14 @@ class UserCard extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Align(
                   alignment: Alignment.topRight,
-                  child: Text(user.uuid)),
+                  child: Text(beacon.beaconUUID)),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Align(
                 alignment: Alignment.centerLeft,
                 child: Text(
-                  user.userName,
+                  beacon.phoneMake,
                   style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
                 ),
               ),
@@ -72,7 +74,7 @@ class UserCard extends StatelessWidget {
               padding: const EdgeInsets.all(8.0),
               child: Align(
                 alignment: Alignment.bottomRight,
-                child: Text(user.distance.toString() + "m"),
+                child: Text("DISTANCE HERE"),
               ),
             )
           ],
@@ -116,6 +118,31 @@ showGenericDialog(BuildContext context, String title, String body) {
             });
       }
 }
+
+  showGPSDialog(BuildContext context) async {
+      if (Theme.of(context).platform == TargetPlatform.android) {
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: Text("Can't get current location"),
+                content:
+                    const Text('Please enable GPS and try again'),
+                actions: <Widget>[
+                  FlatButton(
+                      child: Text('OK'),
+                      onPressed: () {
+                        final AndroidIntent intent = AndroidIntent(
+                            action:
+                                'android.settings.LOCATION_SOURCE_SETTINGS');
+                        intent.launch();
+                        Navigator.of(context, rootNavigator: true).pop();
+                      })
+                ],
+              );
+            });
+      }
+  }
 
 
   buildProgressBarTile() {

@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:umbrella/UmbrellaBeaconTools/UmbrellaBeacon.dart';
@@ -12,6 +10,8 @@ const EddystoneServiceId = "0000feaa-0000-1000-8000-00805f9b34fb";
 
 List<Beacon> beaconList = new List();
 
+
+// Adapted from: https://github.com/michaellee8/flutter_blue_beacon/blob/master/lib/beacon.dart
 abstract class Beacon {
   final int tx;
   final ScanResult scanResult;
@@ -110,13 +110,13 @@ class EddystoneUID extends Eddystone {
     List<int> rawBytes =
         scanResult.advertisementData.serviceData[EddystoneServiceId];
     var frameType = rawBytes[0];
-    //print("frameType: " + frameType.toString());
+    print("frameType: " + frameType.toString());
     var tx = byteToInt8(rawBytes[1]);
-    //print("tx power: " + tx.toString());
+    print("tx power: " + tx.toString());
     var namespaceId = byteListToHexString(rawBytes.sublist(2, 12));
-   // print("namespace id: " + namespaceId);
+    print("namespace id: " + namespaceId);
     var beaconId = byteListToHexString(rawBytes.sublist(12, 18));
-   //   print("beacon id: " + beaconId);
+    print("beacon id: " + beaconId);
 
     return EddystoneUID(
         frameType: frameType,
