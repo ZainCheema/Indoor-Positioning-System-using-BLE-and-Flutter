@@ -6,12 +6,13 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' as foundation;
+import 'package:flutter_compass/flutter_compass.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
 import '../utils.dart';
 import 'BeaconInfo.dart';
-import 'User.dart';
+import 'RangedBeaconData.dart';
 
 class AppStateModel extends foundation.ChangeNotifier {
   // Singleton
@@ -35,26 +36,18 @@ class AppStateModel extends foundation.ChangeNotifier {
 
   Uuid uuid = new Uuid();
 
-  String phoneMake = "";
+  String id = "";
 
-  // User of the app.
-  User user;
+  String phoneMake = "";
 
   // A list of all users in the app.
   List<BeaconInfo> registeredBeacons;
 
-  // All nearby users.
-  List<User> nearbyUsers;
+  CollectionReference beaconPath =
+      Firestore.instance.collection('RegisteredBeacons');
 
-  CollectionReference userPath = Firestore.instance
-      .collection('Country')
-      .document('City')
-      .collection('Street')
-      .document('Users')
-      .collection('User');
-
-  CollectionReference beaconPath = Firestore.instance
-      .collection('RegisteredBeacons');
+  CollectionReference rangingPath =
+      Firestore.instance.collection('RangingData');
 
   Stream<QuerySnapshot> beaconSnapshots;
 
@@ -72,88 +65,58 @@ class AppStateModel extends foundation.ChangeNotifier {
     debugPrint("init() called");
 
     registeredBeacons = new List<BeaconInfo>();
-    nearbyUsers = new List<User>();
 
-      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      String userName = androidInfo.model.toString();
-      phoneMake = userName;
-      print('Running on $userName');
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+    AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+    phoneMake = androidInfo.model.toString();
+    print('Running on $phoneMake');
 
-      String userId = uuid.v1().toString();
-      userId = userId.replaceAll(RegExp('-'), '');
+    id = uuid.v1().toString();
+    id = id.replaceAll(RegExp('-'), '');
 
-      if (Platform.isAndroid) {
-        // For Android, the user's uuid has to be 20 chars long to conform
-        // with Eddystones NamespaceId length
-        // Also has to be without hyphens
-        userId = userId.substring(0, 20);
+    if (Platform.isAndroid) {
+      // For Android, the user's uuid has to be 20 chars long to conform
+      // with Eddystones NamespaceId length
+      // Also has to be without hyphens
+      id = id.substring(0, 20);
 
-        if (userId.length == 20) {
-          debugPrint("Android users ID is the correct format");
-        } else {
-          debugPrint('user ID was of an incorrect format');
-          debugPrint(userId);
-          debugPrint("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
-        }
+      if (id.length == 20) {
+        debugPrint("Android users ID is the correct format");
+      } else {
+        debugPrint('user ID was of an incorrect format');
+        debugPrint(id);
+        debugPrint("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
       }
+    }
 
-      // FlutterCompass.events.listen((double direction) async {
+    FlutterCompass.events.listen((double direction) async {
       //  // String facing = angleToClockFace(direction.round());
-
-      //   Map<String, dynamic> userJson = {
-      //     'UUID': userId,
-      //     'UserName': userName,
-      //     'Facing': "",
-      //     'Direction': 0
-      //   };
-
-      //   uploadUser(userJson);
-      // });
-
-      Map<String, dynamic> userJson = {
-        'UUID': userId,
-        'UserName': userName,
-        'Facing': "",
-        'Direction': 0
-      };
-
-      user = new User.fromJson(userJson);
-
-      //  uploadUser(userJson);
-
-      streamRegBeacons();
-
-      //streamUsers();
-  }
-
-  void uploadUser(Map<String, dynamic> json) async {
-    user = new User.fromJson(json);
-
-    await userPath.document(user.uuid).setData({
-      'UUID': user.uuid,
-      'UserName': user.userName,
-      'Facing': user.facing,
-      'Direction': user.direction
     });
-
-    debugPrint("User uploaded!");
+    streamRegBeacons();
   }
 
   void registerBeacon(BeaconInfo bc, String path) async {
-    await beaconPath.document(path).setData(
-      bc.toJson());
+    await beaconPath.document(path).setData(bc.toJson());
   }
 
   void removeBeacon(String path) async {
     await beaconPath.document(path).delete();
   }
 
+  void uploadRangingData(
+      RangedBeaconData rbd, String path, String beaconName) async {
+    await beaconPath
+        .document(path)
+        .collection("RangingData")
+        .document("From" + beaconName)
+        .setData(rbd.toJson());
+  }
+
   void streamRegBeacons() {
-    beaconSnapshots = Firestore.instance.collection(beaconPath.path).snapshots();
+    beaconSnapshots =
+        Firestore.instance.collection(beaconPath.path).snapshots();
 
     beaconStream = beaconSnapshots.listen((s) {
-      //  debugPrint("USER ADDED");
       registeredBeacons.clear();
       for (var document in s.documents) {
         registeredBeacons = List.from(registeredBeacons);
@@ -167,11 +130,6 @@ class AppStateModel extends foundation.ChangeNotifier {
     return registeredBeacons;
   }
 
-  User getUser() {
-    return user;
-  }
-
-
   startBeaconBroadcast() async {
     BeaconBroadcast beaconBroadcast = BeaconBroadcast();
 
@@ -182,11 +140,10 @@ class AppStateModel extends foundation.ChangeNotifier {
         print("Beacon advertising is supported on this device");
 
         if (Platform.isAndroid) {
-          debugPrint(
-              "User beacon uuid: " + AppStateModel.instance.getUser().uuid);
+          debugPrint("User beacon uuid: " + id);
 
           beaconBroadcast
-              .setUUID(AppStateModel.instance.getUser().uuid)
+              .setUUID(id)
               .setMajorId(randomNumber(1, 99))
               .setTransmissionPower(-59)
               .setLayout(
@@ -221,8 +178,6 @@ class AppStateModel extends foundation.ChangeNotifier {
     beaconBroadcast.stop();
     print(beaconStatusMessage);
   }
-
-
 
   checkGPS() async {
     if (!(await Geolocator().isLocationServiceEnabled())) {
@@ -260,7 +215,4 @@ class AppStateModel extends foundation.ChangeNotifier {
   Future<void> checkLocationPermission() async {
     gpsAllowed = await requestPermission(PermissionGroup.location);
   }
-
 }
-
-

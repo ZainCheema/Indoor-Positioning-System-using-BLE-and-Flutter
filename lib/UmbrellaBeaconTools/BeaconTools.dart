@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
+import 'package:umbrella/UmbrellaBeaconTools/AndroidBeaconLibraryModel.dart';
 import 'package:umbrella/UmbrellaBeaconTools/KalmanFilter.dart';
 import 'package:umbrella/UmbrellaBeaconTools/LogDistancePathLossModel.dart';
 import 'package:umbrella/UmbrellaBeaconTools/UmbrellaBeacon.dart';
@@ -12,7 +13,6 @@ const EddystoneServiceId = "0000feaa-0000-1000-8000-00805f9b34fb";
 
 List<Beacon> beaconList = new List();
 
-
 // Adapted from: https://github.com/michaellee8/flutter_blue_beacon/blob/master/lib/beacon.dart
 abstract class Beacon {
   final int tx;
@@ -20,10 +20,10 @@ abstract class Beacon {
 
   double get rawRssi => scanResult.rssi.toDouble();
 
-  double get kfRssi => KalmanFilter(0.125, 32, 1023, 0).getFilteredValue(rawRssi);
+  double get kfRssi =>
+      KalmanFilter(0.125, 32, 1023, 0).getFilteredValue(rawRssi);
 
   String get name => scanResult.peripheral.name;
-
 
   String get id => scanResult.peripheral.identifier;
 
@@ -31,26 +31,20 @@ abstract class Beacon {
 
   int get txAt1Meter => tx;
 
-  double get rawRssiDistance {
-    double ratio = rawRssi * 1.0 / (txAt1Meter);
-    if (ratio < 1.0) {
-      return pow(ratio, 10);
-    } else {
-      return (0.89976) * pow(ratio, 7.7095) + 0.111;
-    }
+  double get rawRssiLogDistance {
+    return LogDistancePathLossModel(rawRssi).getCalculatedDistance();
   }
 
-  double get rawLogDistance {
+  double get kfRssiLogDistance {
     return LogDistancePathLossModel(kfRssi).getCalculatedDistance();
   }
 
-  double get kfRssiDistance {
-    double ratio = rawRssi * 1.0 / (txAt1Meter);
-    if (ratio < 1.0) {
-      return pow(ratio, 10);
-    } else {
-      return (0.89976) * pow(ratio, 7.7095) + 0.111;
-    }
+  double get rawRssiLibraryDistance {
+    return AndroidBeaconLibraryModel().getCalculatedDistance(rawRssi, txAt1Meter);
+  }
+
+  double get kfRssiLibraryDistance {
+    return AndroidBeaconLibraryModel().getCalculatedDistance(kfRssi, txAt1Meter);
   }
 
   const Beacon({@required this.tx, @required this.scanResult});
@@ -58,17 +52,15 @@ abstract class Beacon {
   static List<Beacon> fromScanResult(ScanResult scanResult) {
     try {
       EddystoneUID eddystoneBeacon = EddystoneUID.fromScanResult(scanResult);
-      if(eddystoneBeacon != null) {
+      if (eddystoneBeacon != null) {
         debugPrint("Eddystone beacon found!");
         beaconList.add(eddystoneBeacon);
       }
-
-    } on Exception catch(e) {
-        print("ERROR: " + e.toString());
+    } on Exception catch (e) {
+      print("ERROR: " + e.toString());
     }
 
     return beaconList;
-
   }
 }
 
@@ -99,10 +91,10 @@ class EddystoneUID extends Eddystone {
       : super(tx: tx, scanResult: scanResult, frameType: frameType);
 
   factory EddystoneUID.fromScanResult(ScanResult scanResult) {
-  // print("Scanning for Eddystone beacon");
+    // print("Scanning for Eddystone beacon");
 
-    if(scanResult.advertisementData.serviceData == null) {
-     // debugPrint("Service data is null");
+    if (scanResult.advertisementData.serviceData == null) {
+      // debugPrint("Service data is null");
       return null;
     }
 
@@ -119,7 +111,7 @@ class EddystoneUID extends Eddystone {
       return null;
     }
 
-   // print("Eddystone beacon detected!");
+    // print("Eddystone beacon detected!");
 
     List<int> rawBytes =
         scanResult.advertisementData.serviceData[EddystoneServiceId];
@@ -149,4 +141,3 @@ class EddystoneUID extends Eddystone {
         this.tx
       ]);
 }
-

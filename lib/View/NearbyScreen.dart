@@ -4,14 +4,11 @@ import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:umbrella/Model/AppStateModel.dart';
 import 'package:umbrella/Model/BeaconInfo.dart';
-import 'package:umbrella/utils.dart';
-import 'dart:io' show Platform;
+import 'package:umbrella/Model/RangedBeaconData.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
-import 'package:umbrella/Model/User.dart';
 import 'package:umbrella/widgets.dart';
 import 'package:umbrella/UmbrellaBeaconTools/UmbrellaBeacon.dart';
-import 'package:beacon_broadcast/beacon_broadcast.dart';
 import 'package:wakelock/wakelock.dart';
 
 import '../styles.dart';
@@ -19,6 +16,8 @@ import '../styles.dart';
 var firestoreReference = Firestore.instance;
 String beaconStatusMessage;
 AppStateModel appStateModel = AppStateModel.instance;
+
+List<RangedBeaconData> rangedBeacons = new List<RangedBeaconData>();
 
 class NearbyScreen extends StatefulWidget {
   @override
@@ -128,24 +127,60 @@ class NearbyScreenState extends State<NearbyScreen> {
   }
 
   buildScanResultTiles() {
-    // print("_buildScanResultTiles() entered");
     List<BeaconInfo> regBeacons = AppStateModel.instance.getRegisteredBeacons();
-    // debugPrint("All Users: " + allUsers.length.toString());
-    List<BeaconInfo> rangedBeacons = new List<BeaconInfo>();
 
     return beacons.values.map<Widget>((b) {
       if (b is EddystoneUID) {
         //   debugPrint("EddyStone beacon nearby!");
         for (var pBeacon in regBeacons) {
           if (pBeacon.beaconUUID == b.namespaceId) {
-            debugPrint("Beacon " + pBeacon.phoneMake + "+" + pBeacon.beaconUUID + " is nearby!");
+            debugPrint("Beacon " +
+                pBeacon.phoneMake +
+                "+" +
+                pBeacon.beaconUUID +
+                " is nearby!");
             print("Raw rssi: " + b.rawRssi.toString());
             print("Filtered rssi: " + b.kfRssi.toString());
-            print("Log distance: " + b.rawLogDistance.toString());
-            rangedBeacons.add(pBeacon);
+            print("Log distance: " + b.rawRssiLogDistance.toString());
+
+            // If beacon has already been added, update lists and upload to database
+            // else, create a new RangedBeaconInfo obj and add that
+            RangedBeaconData rangedBeaconData = rangedBeacons.singleWhere(
+                (element) =>
+                    // ignore: missing_return
+                    element.beaconUUID == pBeacon.beaconUUID, orElse: () {
+              RangedBeaconData rbd = new RangedBeaconData(
+                  pBeacon.phoneMake, pBeacon.beaconUUID, b.tx);
+              rbd.addRawRssi(b.rawRssi);
+              rbd.addRawRssiDistance(b.rawRssiLibraryDistance);
+              rbd.addkfRssi(b.kfRssi);
+              rbd.addkfRssiDistance(b.kfRssiLibraryDistance);
+
+              rangedBeacons.add(rbd);
+
+              String path = appStateModel.phoneMake + "+" + appStateModel.id;
+              String beaconName = pBeacon.phoneMake + "+" + pBeacon.beaconUUID;
+
+              new Timer(const Duration(seconds: 1),
+                  () => appStateModel.uploadRangingData(rbd, path, beaconName));
+            });
+
+            rangedBeaconData.addRawRssi(b.rawRssi);
+            rangedBeaconData.addRawRssiDistance(b.rawRssiLogDistance);
+            rangedBeaconData.addkfRssi(b.kfRssi);
+            rangedBeaconData.addkfRssiDistance(b.kfRssiLibraryDistance);
+
+            String path = appStateModel.phoneMake + "+" + appStateModel.id;
+            String beaconName = pBeacon.phoneMake + "+" + pBeacon.beaconUUID;
+
+            new Timer(
+                const Duration(seconds: 1),
+                () => appStateModel.uploadRangingData(
+                    rangedBeaconData, path, beaconName));
+
             return RangedBeaconCard(beacon: pBeacon);
           } else {
-            debugPrint("Beacon detected not registered");
+            debugPrint("Beacon detected is not registered");
           }
         }
       }

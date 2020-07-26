@@ -91,12 +91,12 @@ class OpeningScreenState extends State<OpeningScreen> {
 
       bc = new BeaconInfo(
           phoneMake: phoneMake,
-          beaconUUID: appStateModel.user.uuid,
+          beaconUUID: appStateModel.id,
           txPower: "-59",
           standardBroadcasting: "Eddystone");
     });
 
-    beaconPath = phoneMake + "+" + appStateModel.user.uuid;
+    beaconPath = phoneMake + "+" + appStateModel.id;
     print("Beacon path: " + beaconPath);
 
   }

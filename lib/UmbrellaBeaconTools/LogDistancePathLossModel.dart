@@ -20,7 +20,7 @@ class LogDistancePathLossModel {
   // For line of sight in building
   // Gamma
   double pathLossExponent = 0.3;
-  // Set to zero, as no large obstacle, used to mitigate for flate fading
+  // Set to zero, as no large obstacle, used to mitigate for flat fading
   // Sigma
   double flatFadingMitigation = 0;
 

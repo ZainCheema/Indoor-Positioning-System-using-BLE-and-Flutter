@@ -1,6 +1,6 @@
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
-import 'package:umbrella/Model/RangedBeaconInfo.dart';
+import 'package:umbrella/Model/RangedBeaconData.dart';
 import 'Model/User.dart';
 import 'Model/BeaconInfo.dart';
 
