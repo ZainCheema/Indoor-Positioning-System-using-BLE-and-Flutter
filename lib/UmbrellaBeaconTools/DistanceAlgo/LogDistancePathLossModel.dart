@@ -13,9 +13,9 @@ class LogDistancePathLossModel {
 
   // RSSI
   double rssi;
-  // Rssd0, rssi measured at chosen reference distance do
-  double referenceRss = -55;
-  //do
+  // Rssd0, rssi measured at chosen reference distance d0
+  double referenceRssi = -55;
+  //d0
   double referenceDistance = 0.944;
   // For line of sight in building
   // Gamma
@@ -26,7 +26,7 @@ class LogDistancePathLossModel {
 
   double getCalculatedDistance() {
     double distance;
-    double rssiDiff = rssi - referenceRss - flatFadingMitigation;
+    double rssiDiff = rssi - referenceRssi - flatFadingMitigation;
 
     double i =  pow(10, -(rssiDiff/ 10 * pathLossExponent));
 

@@ -22,7 +22,13 @@ var connectivityResult;
 StreamSubscription bluetoothChanges;
 BluetoothState blState;
 
-
+TextEditingController xInput = new TextEditingController();
+TextEditingController yInput = new TextEditingController();
+bool allowTextInput = true;
+bool coordinatesNotNeeded = true;
+bool coordinatesAreDouble = true;
+var xCoordinate;
+var yCoordinate;
 
 class OpeningScreen extends StatefulWidget {
   @override
@@ -78,7 +84,7 @@ class OpeningScreenState extends State<OpeningScreen> {
         phoneMake: phoneMake,
         beaconUUID: "",
         txPower: "-59",
-        standardBroadcasting: "Eddystone");
+        standardBroadcasting: "EddystoneUID");
 
     getBeaconInfo();
   }
@@ -93,12 +99,11 @@ class OpeningScreenState extends State<OpeningScreen> {
           phoneMake: phoneMake,
           beaconUUID: appStateModel.id,
           txPower: "-59",
-          standardBroadcasting: "Eddystone");
+          standardBroadcasting: "EddystoneUID");
     });
 
     beaconPath = phoneMake + "+" + appStateModel.id;
     print("Beacon path: " + beaconPath);
-
   }
 
   buildBroadcastButton() {
@@ -107,6 +112,7 @@ class OpeningScreenState extends State<OpeningScreen> {
           child: new Icon(Icons.stop),
           backgroundColor: Colors.red,
           onPressed: () {
+            allowTextInput = true;
             appStateModel.stopBeaconBroadcast();
             appStateModel.removeBeacon(beaconPath);
             setState(() {
@@ -117,33 +123,58 @@ class OpeningScreenState extends State<OpeningScreen> {
       return new FloatingActionButton(
           child: new Icon(Icons.record_voice_over),
           backgroundColor: Colors.lightGreen,
-          onPressed: () {
+          onPressed: () {      
+            // It is acceptable to leave both empty,
+            // but you can't have one with text and the other without
+            if(xInput.text.isEmpty & yInput.text.isEmpty) {
+              print("Both are empty, no trilateration");
+              coordinatesNotNeeded =  true;
+              coordinatesAreDouble = true;
+            } else {
+              print("You have inputted something");
+              xCoordinate = double.tryParse(xInput.text) ?? null;
+              yCoordinate = double.tryParse(yInput.text) ?? null;
+
+
+
+              // If either field can't be parsed into a double,
+              // set coordinatesAreDouble to false 
+              if(xCoordinate == null || yCoordinate == null) {
+                coordinatesAreDouble = false;
+                print("One of X and Y returned null when parse attempted");
+                print("xCoordinate : $xCoordinate, yCoordinate: $yCoordinate");
+              } else {
+                coordinatesAreDouble = true;
+                print("xCoordinate : $xCoordinate, yCoordinate: $yCoordinate");
+              }
+            }
+
+          
             appStateModel.checkGPS();
             appStateModel.checkLocationPermission();
-            if(appStateModel.wifiEnabled & 
-              appStateModel.bluetoothEnabled & 
-              appStateModel.gpsEnabled & 
-              appStateModel.gpsAllowed) {
-            appStateModel.startBeaconBroadcast();
-            appStateModel.registerBeacon(bc, beaconPath);
-            setState(() {
-              appStateModel.isBroadcasting = true;
-            });
+            if (appStateModel.wifiEnabled &
+                appStateModel.bluetoothEnabled &
+                appStateModel.gpsEnabled &
+                appStateModel.gpsAllowed & coordinatesAreDouble) {
+              allowTextInput = false;
+              appStateModel.startBeaconBroadcast();
+              appStateModel.registerBeacon(bc, beaconPath);
+              setState(() {
+                appStateModel.isBroadcasting = true;
+              });
             } else if (!appStateModel.gpsAllowed) {
-              showGenericDialog(context, 
-              "Location Permission Required", 
-              "Location is needed to correctly advertise as a beacon");
-            } 
-
-            else if (!appStateModel.gpsEnabled) {
+              showGenericDialog(context, "Location Permission Required",
+                  "Location is needed to correctly advertise as a beacon");
+            } else if (!appStateModel.gpsEnabled) {
               showGPSDialog(context);
-            }
-            
-            else {
-              showGenericDialog(context,
-              "Wi-Fi, Bluetooth and GPS need to be on",
-              'Please check each of these in order to broadcast'
-              );
+            } else if (!coordinatesAreDouble) {
+              showGenericDialog(context, "Double check inputted coordinates", 
+               "Values determined to be invalid");
+            } else {
+              showGenericDialog(
+                  context,
+                  "Wi-Fi, Bluetooth and GPS need to be on",
+                  'Please check each of these in order to broadcast');
             }
           });
     }
@@ -177,7 +208,70 @@ class OpeningScreenState extends State<OpeningScreen> {
         (blState != BluetoothState.POWERED_ON)
             ? buildAlertTile(context, "Please check whether Bluetooth is on")
             : new Container(),
-        Center(child: BeaconInfoContainer(beaconInfo: bc))
+        Center(
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            BeaconInfoContainer(beaconInfo: bc),
+            Container(
+              margin: EdgeInsets.only(top: 30, left: 30, right: 30),
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      "Enter X and Y Coordinates to use beacon as anchor for trilateration [OPTIONAL]",
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      enabled: allowTextInput,
+                      keyboardType: TextInputType.number,
+                      maxLength: 3,
+                      textAlign: TextAlign.center,
+                      autofocus: true,
+                      controller: xInput,
+                      decoration: InputDecoration(
+                        hintText: 'X',
+                        counterText: "",
+                        contentPadding:
+                            EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0)),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextFormField(
+                      enabled: allowTextInput,
+                      keyboardType: TextInputType.number,
+                      maxLength: 3,
+                      textAlign: TextAlign.center,
+                      autofocus: true,
+                      controller: yInput,
+                      decoration: InputDecoration(
+                        hintText: 'Y',
+                        counterText: "",
+                        contentPadding:
+                            EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                        border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0)),
+                      ),
+                    ),
+                  ),
+                  Padding(padding: EdgeInsets.only(top: 20)),
+                ],
+              ),
+            ),
+          ],
+        ))
       ]),
     );
   }
