@@ -1,5 +1,6 @@
 // https://ieeexplore.ieee.org/abstract/document/9051304
-
+// https://stackoverflow.com/questions/21338031/radius-networks-ibeacon-ranging-fluctuation/21340147#21340147
+// Credit to David Young of RadiusNetworks
 import 'dart:math';
 
 class AndroidBeaconLibraryModel {

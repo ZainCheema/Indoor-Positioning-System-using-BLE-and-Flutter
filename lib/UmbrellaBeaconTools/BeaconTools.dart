@@ -1,10 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
-import 'package:umbrella/UmbrellaBeaconTools/AndroidBeaconLibraryModel.dart';
-import 'package:umbrella/UmbrellaBeaconTools/KalmanFilter.dart';
-import 'package:umbrella/UmbrellaBeaconTools/LogDistancePathLossModel.dart';
+import 'package:umbrella/UmbrellaBeaconTools/DistanceAlgo/AndroidBeaconLibraryModel.dart';
+import 'package:umbrella/UmbrellaBeaconTools/Filters/KalmanFilter.dart';
+import 'package:umbrella/UmbrellaBeaconTools/DistanceAlgo/LogDistancePathLossModel.dart';
 import 'package:umbrella/UmbrellaBeaconTools/UmbrellaBeacon.dart';
-import 'dart:math';
 import 'package:umbrella/utils.dart';
 import 'package:quiver/core.dart';
 export 'package:flutter_ble_lib/flutter_ble_lib.dart' show ScanResult;
@@ -12,6 +11,10 @@ export 'package:flutter_ble_lib/flutter_ble_lib.dart' show ScanResult;
 const EddystoneServiceId = "0000feaa-0000-1000-8000-00805f9b34fb";
 
 List<Beacon> beaconList = new List();
+
+KalmanFilter kf = new KalmanFilter(0.125, 32, 1023, 0);
+
+//KalmanFilter kf = new KalmanFilter(0.125, 32, 900, 0);
 
 // Adapted from: https://github.com/michaellee8/flutter_blue_beacon/blob/master/lib/beacon.dart
 abstract class Beacon {
@@ -21,7 +24,7 @@ abstract class Beacon {
   double get rawRssi => scanResult.rssi.toDouble();
 
   double get kfRssi =>
-      KalmanFilter(0.125, 32, 1023, 0).getFilteredValue(rawRssi);
+      kf.getFilteredValue(rawRssi);
 
   String get name => scanResult.peripheral.name;
 

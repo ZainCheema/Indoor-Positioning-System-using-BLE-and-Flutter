@@ -17,7 +17,7 @@ var firestoreReference = Firestore.instance;
 String beaconStatusMessage;
 AppStateModel appStateModel = AppStateModel.instance;
 
-List<RangedBeaconData> rangedBeacons = new List<RangedBeaconData>();
+List<RangedBeaconData> rangedAnchorBeacons = new List<RangedBeaconData>();
 
 class NearbyScreen extends StatefulWidget {
   @override
@@ -127,25 +127,30 @@ class NearbyScreenState extends State<NearbyScreen> {
   }
 
   buildScanResultTiles() {
-    List<BeaconInfo> regBeacons = AppStateModel.instance.getRegisteredBeacons();
+    List<BeaconInfo> anchorBeacons = AppStateModel.instance.getAnchorBeacons();
 
     return beacons.values.map<Widget>((b) {
       if (b is EddystoneUID) {
         //   debugPrint("EddyStone beacon nearby!");
-        for (var pBeacon in regBeacons) {
+        for (var pBeacon in anchorBeacons) {
           if (pBeacon.beaconUUID == b.namespaceId) {
             debugPrint("Beacon " +
                 pBeacon.phoneMake +
                 "+" +
                 pBeacon.beaconUUID +
                 " is nearby!");
+            print("tx power: " + b.tx.toString());
             print("Raw rssi: " + b.rawRssi.toString());
             print("Filtered rssi: " + b.kfRssi.toString());
-            print("Log distance: " + b.rawRssiLogDistance.toString());
+            print("Log distance with raw rssi: " + b.rawRssiLogDistance.toString());
+            print("Log distance with filtered rssi: " + b.kfRssiLogDistance.toString());
+            print("RadiusNetworks distance with raw rssi: " + b.rawRssiLibraryDistance.toString());
+                        print("RadiusNetworks distance with filtered rssi: " + b.kfRssiLibraryDistance.toString());
+          
 
             // If beacon has already been added, update lists and upload to database
             // else, create a new RangedBeaconInfo obj and add that
-            RangedBeaconData rangedBeaconData = rangedBeacons.singleWhere(
+            RangedBeaconData rangedBeaconData = rangedAnchorBeacons.singleWhere(
                 (element) =>
                     // ignore: missing_return
                     element.beaconUUID == pBeacon.beaconUUID, orElse: () {
@@ -156,27 +161,25 @@ class NearbyScreenState extends State<NearbyScreen> {
               rbd.addkfRssi(b.kfRssi);
               rbd.addkfRssiDistance(b.kfRssiLibraryDistance);
 
-              rangedBeacons.add(rbd);
+              rangedAnchorBeacons.add(rbd);
 
-              String path = appStateModel.phoneMake + "+" + appStateModel.id;
               String beaconName = pBeacon.phoneMake + "+" + pBeacon.beaconUUID;
 
               new Timer(const Duration(seconds: 1),
-                  () => appStateModel.uploadRangingData(rbd, path, beaconName));
+                  () => appStateModel.uploadRangedBeaconData(rbd, beaconName));
             });
 
             rangedBeaconData.addRawRssi(b.rawRssi);
             rangedBeaconData.addRawRssiDistance(b.rawRssiLogDistance);
             rangedBeaconData.addkfRssi(b.kfRssi);
-            rangedBeaconData.addkfRssiDistance(b.kfRssiLibraryDistance);
+            rangedBeaconData.addkfRssiDistance(b.kfRssiLogDistance);
 
-            String path = appStateModel.phoneMake + "+" + appStateModel.id;
             String beaconName = pBeacon.phoneMake + "+" + pBeacon.beaconUUID;
 
             new Timer(
                 const Duration(seconds: 1),
-                () => appStateModel.uploadRangingData(
-                    rangedBeaconData, path, beaconName));
+                () => appStateModel.uploadRangedBeaconData(
+                    rangedBeaconData, beaconName));
 
             return RangedBeaconCard(beacon: pBeacon);
           } else {

@@ -41,13 +41,13 @@ class AppStateModel extends foundation.ChangeNotifier {
   String phoneMake = "";
 
   // A list of all users in the app.
-  List<BeaconInfo> registeredBeacons;
+  List<BeaconInfo> anchorBeacons;
 
-  CollectionReference beaconPath =
-      Firestore.instance.collection('RegisteredBeacons');
+  CollectionReference anchorPath =
+      Firestore.instance.collection('AnchorNodes');
 
-  CollectionReference rangingPath =
-      Firestore.instance.collection('RangingData');
+  CollectionReference rangedPath =
+      Firestore.instance.collection('RangedNodes');
 
   Stream<QuerySnapshot> beaconSnapshots;
 
@@ -64,7 +64,7 @@ class AppStateModel extends foundation.ChangeNotifier {
     // If all these checks pass, create the user, then load the nearby users
     debugPrint("init() called");
 
-    registeredBeacons = new List<BeaconInfo>();
+    anchorBeacons = new List<BeaconInfo>();
 
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
@@ -92,42 +92,40 @@ class AppStateModel extends foundation.ChangeNotifier {
     FlutterCompass.events.listen((double direction) async {
       //  // String facing = angleToClockFace(direction.round());
     });
-    streamRegBeacons();
+    streamAnchorBeacons();
   }
 
   void registerBeacon(BeaconInfo bc, String path) async {
-    await beaconPath.document(path).setData(bc.toJson());
+    await anchorPath.document(path).setData(bc.toJson());
   }
 
   void removeBeacon(String path) async {
-    await beaconPath.document(path).delete();
+    await anchorPath.document(path).delete();
   }
 
-  void uploadRangingData(
-      RangedBeaconData rbd, String path, String beaconName) async {
-    await beaconPath
-        .document(path)
-        .collection("RangingData")
-        .document("From" + beaconName)
+  void uploadRangedBeaconData(
+      RangedBeaconData rbd, String beaconName) async {
+    await rangedPath
+        .document(beaconName)
         .setData(rbd.toJson());
   }
 
-  void streamRegBeacons() {
+  void streamAnchorBeacons() {
     beaconSnapshots =
-        Firestore.instance.collection(beaconPath.path).snapshots();
+        Firestore.instance.collection(anchorPath.path).snapshots();
 
     beaconStream = beaconSnapshots.listen((s) {
-      registeredBeacons.clear();
+      anchorBeacons.clear();
       for (var document in s.documents) {
-        registeredBeacons = List.from(registeredBeacons);
-        registeredBeacons.add(BeaconInfo.fromJson(document.data));
+        anchorBeacons = List.from(anchorBeacons);
+        anchorBeacons.add(BeaconInfo.fromJson(document.data));
       }
-      debugPrint("REGISTERED BEACONS: " + registeredBeacons.length.toString());
+      debugPrint("REGISTERED BEACONS: " + anchorBeacons.length.toString());
     });
   }
 
-  List<BeaconInfo> getRegisteredBeacons() {
-    return registeredBeacons;
+  List<BeaconInfo> getAnchorBeacons() {
+    return anchorBeacons;
   }
 
   startBeaconBroadcast() async {
@@ -147,7 +145,7 @@ class AppStateModel extends foundation.ChangeNotifier {
               .setMajorId(randomNumber(1, 99))
               .setTransmissionPower(-59)
               .setLayout(
-                  BeaconBroadcast.EDDYSTONE_UID_LAYOUT) //Android-only, optional
+                  BeaconBroadcast.EDDYSTONE_UID_LAYOUT)
               .start();
         }
 

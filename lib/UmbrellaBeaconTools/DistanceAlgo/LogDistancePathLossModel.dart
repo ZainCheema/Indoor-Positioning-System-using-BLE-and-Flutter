@@ -16,7 +16,7 @@ class LogDistancePathLossModel {
   // Rssd0, rssi measured at chosen reference distance do
   double referenceRss = -55;
   //do
-  double referenceDistance = 1;
+  double referenceDistance = 0.944;
   // For line of sight in building
   // Gamma
   double pathLossExponent = 0.3;

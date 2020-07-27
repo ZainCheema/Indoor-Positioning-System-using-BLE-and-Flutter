@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 
 class RangedBeaconData {
   List<double> rawRssi = new List<double>();
