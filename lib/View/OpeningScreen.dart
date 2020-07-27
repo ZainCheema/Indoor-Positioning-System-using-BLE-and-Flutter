@@ -25,8 +25,7 @@ BluetoothState blState;
 TextEditingController xInput = new TextEditingController();
 TextEditingController yInput = new TextEditingController();
 bool allowTextInput = true;
-bool coordinatesNotNeeded = true;
-bool coordinatesAreDouble = true;
+bool coordinatesAreOK = true;
 var xCoordinate;
 var yCoordinate;
 
@@ -123,40 +122,43 @@ class OpeningScreenState extends State<OpeningScreen> {
       return new FloatingActionButton(
           child: new Icon(Icons.record_voice_over),
           backgroundColor: Colors.lightGreen,
-          onPressed: () {      
+          onPressed: () {
             // It is acceptable to leave both empty,
             // but you can't have one with text and the other without
-            if(xInput.text.isEmpty & yInput.text.isEmpty) {
+            if (xInput.text.isEmpty & yInput.text.isEmpty) {
               print("Both are empty, no trilateration");
-              coordinatesNotNeeded =  true;
-              coordinatesAreDouble = true;
+              coordinatesAreOK = true;
             } else {
               print("You have inputted something");
               xCoordinate = double.tryParse(xInput.text) ?? null;
               yCoordinate = double.tryParse(yInput.text) ?? null;
 
-
-
               // If either field can't be parsed into a double,
-              // set coordinatesAreDouble to false 
-              if(xCoordinate == null || yCoordinate == null) {
-                coordinatesAreDouble = false;
+              // set coordinatesAreDouble to false
+              if (xCoordinate == null || yCoordinate == null) {
+                coordinatesAreOK = false;
                 print("One of X and Y returned null when parse attempted");
                 print("xCoordinate : $xCoordinate, yCoordinate: $yCoordinate");
               } else {
-                coordinatesAreDouble = true;
+                coordinatesAreOK = true;
                 print("xCoordinate : $xCoordinate, yCoordinate: $yCoordinate");
               }
             }
 
-          
             appStateModel.checkGPS();
             appStateModel.checkLocationPermission();
             if (appStateModel.wifiEnabled &
                 appStateModel.bluetoothEnabled &
                 appStateModel.gpsEnabled &
-                appStateModel.gpsAllowed & coordinatesAreDouble) {
+                appStateModel.gpsAllowed &
+                coordinatesAreOK) {
               allowTextInput = false;
+
+              if (xCoordinate != null && yCoordinate != null) {
+                bc.x = xCoordinate;
+                bc.y = yCoordinate;
+              }
+
               appStateModel.startBeaconBroadcast();
               appStateModel.registerBeacon(bc, beaconPath);
               setState(() {
@@ -167,9 +169,9 @@ class OpeningScreenState extends State<OpeningScreen> {
                   "Location is needed to correctly advertise as a beacon");
             } else if (!appStateModel.gpsEnabled) {
               showGPSDialog(context);
-            } else if (!coordinatesAreDouble) {
-              showGenericDialog(context, "Double check inputted coordinates", 
-               "Values determined to be invalid");
+            } else if (!coordinatesAreOK) {
+              showGenericDialog(context, "Double check inputted coordinates",
+                  "Values determined to be invalid");
             } else {
               showGenericDialog(
                   context,

@@ -9,6 +9,9 @@ class BeaconInfo {
   final String txPower;
   final String standardBroadcasting;
 
+  double x;
+  double y;
+
   factory BeaconInfo.fromJson(Map<String, dynamic> json) {
     return BeaconInfo(
       phoneMake: json['phoneMake'],
@@ -22,7 +25,9 @@ class BeaconInfo {
     'phoneMake': phoneMake,
     'beaconUUID': beaconUUID,
     'txPower': txPower,
-    'standardBroadcasting': standardBroadcasting
+    'standardBroadcasting': standardBroadcasting,
+    'xCoordinate': x,
+    'yCoordinate': y
   };
 
 }
