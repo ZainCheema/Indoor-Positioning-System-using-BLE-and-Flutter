@@ -17,7 +17,10 @@ class KalmanFilter {
     double p; //estimation error covariance
     double k; //kalman gain
 
+    double passCounter;
+
     double getFilteredValue(double measurement) {
+      // prediction phase
       p = p + q;
 
       // measurement update

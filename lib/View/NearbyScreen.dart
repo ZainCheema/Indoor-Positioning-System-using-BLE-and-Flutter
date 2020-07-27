@@ -134,6 +134,7 @@ class NearbyScreenState extends State<NearbyScreen> {
         //   debugPrint("EddyStone beacon nearby!");
         for (var pBeacon in anchorBeacons) {
           if (pBeacon.beaconUUID == b.namespaceId) {
+            
             debugPrint("Beacon " +
                 pBeacon.phoneMake +
                 "+" +
@@ -145,7 +146,7 @@ class NearbyScreenState extends State<NearbyScreen> {
             print("Log distance with raw rssi: " + b.rawRssiLogDistance.toString());
             print("Log distance with filtered rssi: " + b.kfRssiLogDistance.toString());
             print("RadiusNetworks distance with raw rssi: " + b.rawRssiLibraryDistance.toString());
-                        print("RadiusNetworks distance with filtered rssi: " + b.kfRssiLibraryDistance.toString());
+            print("RadiusNetworks distance with filtered rssi: " + b.kfRssiLibraryDistance.toString());
           
 
             // If beacon has already been added, update lists and upload to database

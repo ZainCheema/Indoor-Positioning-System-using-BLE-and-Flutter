@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
-import 'package:umbrella/UmbrellaBeaconTools/DistanceAlgo/AndroidBeaconLibraryModel.dart';
+import 'package:umbrella/UmbrellaBeaconTools/DistanceAlgorithms/AndroidBeaconLibraryModel.dart';
 import 'package:umbrella/UmbrellaBeaconTools/Filters/KalmanFilter.dart';
-import 'package:umbrella/UmbrellaBeaconTools/DistanceAlgo/LogDistancePathLossModel.dart';
+import 'package:umbrella/UmbrellaBeaconTools/DistanceAlgorithms/LogDistancePathLossModel.dart';
 import 'package:umbrella/UmbrellaBeaconTools/UmbrellaBeacon.dart';
 import 'package:umbrella/utils.dart';
 import 'package:quiver/core.dart';
