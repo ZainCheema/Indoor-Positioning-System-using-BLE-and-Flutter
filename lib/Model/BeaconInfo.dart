@@ -2,22 +2,24 @@ import 'package:flutter/foundation.dart';
 
 class BeaconInfo {
 
-  BeaconInfo({@required this.phoneMake,@required this.beaconUUID,@required this.txPower,@required this.standardBroadcasting});
+  BeaconInfo({@required this.phoneMake,@required this.beaconUUID,@required this.txPower,@required this.standardBroadcasting, x, y});
 
   final String phoneMake;
   final String beaconUUID;
   final String txPower;
   final String standardBroadcasting;
 
-  double x;
-  double y;
+  var x;
+  var y;
 
   factory BeaconInfo.fromJson(Map<String, dynamic> json) {
     return BeaconInfo(
       phoneMake: json['phoneMake'],
       beaconUUID: json['beaconUUID'],
       txPower: json['txPower'],
-      standardBroadcasting: json['standardBroadcasting']
+      standardBroadcasting: json['standardBroadcasting'],
+      x: json['xCoordinate'],
+      y: json['yCoordinate']
     );
   }
 

@@ -29,8 +29,6 @@ dependencies:
   uuid: 2.0.1
   firebase_core: ^0.4.0+9
   cloud_firestore: ^0.12.9+5
-  random_words: ^1.0.2
-  flutter_compass: '^0.4.1'
   geolocator: ^5.0.3
   provider: 4.0.4
   rxdart: ^0.23.1

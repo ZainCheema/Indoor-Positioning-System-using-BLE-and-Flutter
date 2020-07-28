@@ -167,13 +167,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.2.8"
-  flutter_compass:
-    dependency: "direct main"
-    description:
-      name: flutter_compass
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -317,13 +310,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.3"
-  random_words:
-    dependency: "direct main"
-    description:
-      name: random_words
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.2"
   rxdart:
     dependency: "direct main"
     description:

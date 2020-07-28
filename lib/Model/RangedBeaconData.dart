@@ -7,6 +7,10 @@ class RangedBeaconData {
 //  List<double> kfRssiStandardDeviation;
   List<double> kfRssiDistance = new List<double>();
 
+  double x;
+  double y;
+
+
   RangedBeaconData(String pPhoneMake, String pBeaconUUID, int pTxAt1Meter) {
     phoneMake = pPhoneMake;
     beaconUUID = pBeaconUUID;
@@ -19,22 +23,22 @@ class RangedBeaconData {
 
   addRawRssi(double rssi) {
     rawRssi.add(rssi);
-    print("rawRssi length: " + rawRssi.length.toString());
+   // print("rawRssi length: " + rawRssi.length.toString());
   }
 
   addkfRssi(double rssi) {
     kfRssi.add(rssi);
-    print("kfRssi length: " + kfRssi.length.toString());
+    //print("kfRssi length: " + kfRssi.length.toString());
   }
 
   addRawRssiDistance(double distance) {
     rawRssiDistance.add(distance);
-    print("rawRssiDistance length: " + rawRssiDistance.length.toString());
+    //print("rawRssiDistance length: " + rawRssiDistance.length.toString());
   }
 
   addkfRssiDistance(double distance) {
     kfRssiDistance.add(distance);
-    print("kfRssiDistance length: " + kfRssiDistance.length.toString());
+    //print("kfRssiDistance length: " + kfRssiDistance.length.toString());
   }
 
   Map<String, dynamic> toJson() => {

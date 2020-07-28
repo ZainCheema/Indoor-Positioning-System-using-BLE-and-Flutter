@@ -1,7 +1,5 @@
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
-import 'package:umbrella/Model/RangedBeaconData.dart';
-import 'Model/User.dart';
 import 'Model/BeaconInfo.dart';
 
 class BeaconInfoContainer extends StatelessWidget {
@@ -88,10 +86,12 @@ buildAlertTile(BuildContext context, String message) {
     child: new ListTile(
       title: new Text(
         message,
+        // ignore: deprecated_member_use
         style: Theme.of(context).primaryTextTheme.subhead,
       ),
       trailing: new Icon(
         Icons.error,
+        // ignore: deprecated_member_use
         color: Theme.of(context).primaryTextTheme.subhead.color,
       ),
     ),

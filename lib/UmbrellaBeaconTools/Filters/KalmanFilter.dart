@@ -11,17 +11,21 @@ class KalmanFilter {
     }
     
     /* Kalman filter variables */
+    static const double TRAINING_PREDICTION_LIMIT = 50;
     double q; //process noise covariance
     double r; //measurement noise covariance
     double x; //value
     double p; //estimation error covariance
     double k; //kalman gain
-
-    double passCounter;
+    double predictionCycles = 0;
 
     double getFilteredValue(double measurement) {
       // prediction phase
-      p = p + q;
+      if(predictionCycles < TRAINING_PREDICTION_LIMIT) {
+         p = p + q;
+         predictionCycles++;
+         print("FILTER TRAINING CYCLE: " + predictionCycles.toString());
+      }
 
       // measurement update
       k = p / (p + r);

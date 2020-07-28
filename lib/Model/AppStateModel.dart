@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:device_info/device_info.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart' as foundation;
-import 'package:flutter_compass/flutter_compass.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:uuid/uuid.dart';
@@ -88,10 +87,6 @@ class AppStateModel extends foundation.ChangeNotifier {
         debugPrint("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
       }
     }
-
-    FlutterCompass.events.listen((double direction) async {
-      //  // String facing = angleToClockFace(direction.round());
-    });
     streamAnchorBeacons();
   }
 

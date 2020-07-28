@@ -201,79 +201,84 @@ class OpeningScreenState extends State<OpeningScreen> {
       ),
       floatingActionButton: buildBroadcastButton(),
       body: new Stack(children: <Widget>[
-        (connectivityResult == ConnectivityResult.none)
-            ? buildAlertTile(context, "Wifi required to broadcast beacon")
-            : new Container(),
-        (appStateModel.isBroadcasting)
-            ? buildProgressBarTile()
-            : new Container(),
-        (blState != BluetoothState.POWERED_ON)
-            ? buildAlertTile(context, "Please check whether Bluetooth is on")
-            : new Container(),
-        Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-            BeaconInfoContainer(beaconInfo: bc),
-            Container(
-              margin: EdgeInsets.only(top: 30, left: 30, right: 30),
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      "Enter X and Y Coordinates to use beacon as anchor for trilateration [OPTIONAL]",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      enabled: allowTextInput,
-                      keyboardType: TextInputType.number,
-                      maxLength: 3,
-                      textAlign: TextAlign.center,
-                      autofocus: true,
-                      controller: xInput,
-                      decoration: InputDecoration(
-                        hintText: 'X',
-                        counterText: "",
-                        contentPadding:
-                            EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0)),
+                        (connectivityResult == ConnectivityResult.none)
+                    ? buildAlertTile(
+                        context, "Wifi required to broadcast beacon")
+                    : new Container(),
+                (appStateModel.isBroadcasting)
+                    ? buildProgressBarTile()
+                    : new Container(),
+                (blState != BluetoothState.POWERED_ON)
+                    ? buildAlertTile(
+                        context, "Please check whether Bluetooth is on")
+                    : new Container(),
+        Align(
+          child: SingleChildScrollView(
+            child: Center(
+                child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[ 
+                BeaconInfoContainer(beaconInfo: bc),
+
+                Container(
+                  margin: EdgeInsets.only(top: 30, left: 30, right: 30),
+                  width: MediaQuery.of(context).size.width,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: <Widget>[
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          "Enter Cartesian X and Y Coordinates to use beacon as anchor for trilateration [OPTIONAL]",
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
                       ),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextFormField(
-                      enabled: allowTextInput,
-                      keyboardType: TextInputType.number,
-                      maxLength: 3,
-                      textAlign: TextAlign.center,
-                      autofocus: true,
-                      controller: yInput,
-                      decoration: InputDecoration(
-                        hintText: 'Y',
-                        counterText: "",
-                        contentPadding:
-                            EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
-                        border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(5.0)),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          enabled: allowTextInput,
+                          keyboardType: TextInputType.number,
+                          maxLength: 3,
+                          textAlign: TextAlign.center,
+                          controller: xInput,
+                          decoration: InputDecoration(
+                            hintText: 'X (m)',
+                            counterText: "",
+                            contentPadding:
+                                EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0)),
+                          ),
+                        ),
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: TextFormField(
+                          enabled: allowTextInput,
+                          keyboardType: TextInputType.number,
+                          maxLength: 3,
+                          textAlign: TextAlign.center,
+                          controller: yInput,
+                          decoration: InputDecoration(
+                            hintText: 'Y (m)',
+                            counterText: "",
+                            contentPadding:
+                                EdgeInsets.fromLTRB(20.0, 10.0, 20.0, 10.0),
+                            border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5.0)),
+                          ),
+                        ),
+                      ),
+                      Padding(padding: EdgeInsets.only(top: 20)),
+                    ],
                   ),
-                  Padding(padding: EdgeInsets.only(top: 20)),
-                ],
-              ),
-            ),
-          ],
-        ))
+                ),
+              ],
+            )),
+          ),
+        )
       ]),
     );
   }

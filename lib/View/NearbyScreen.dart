@@ -10,6 +10,7 @@ import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:umbrella/widgets.dart';
 import 'package:umbrella/UmbrellaBeaconTools/UmbrellaBeacon.dart';
 import 'package:wakelock/wakelock.dart';
+import 'package:umbrella/UmbrellaBeaconTools/LocalizationAlgorithms/WeightedTrilateration.dart';
 
 import '../styles.dart';
 
@@ -17,13 +18,16 @@ var firestoreReference = Firestore.instance;
 String beaconStatusMessage;
 AppStateModel appStateModel = AppStateModel.instance;
 
+WeightedTrilateration weightedTrilateration;
+
 List<RangedBeaconData> rangedAnchorBeacons = new List<RangedBeaconData>();
+
 
 class NearbyScreen extends StatefulWidget {
   @override
   NearbyScreenState createState() {
     return NearbyScreenState();
-  }
+  }       
 }
 
 class NearbyScreenState extends State<NearbyScreen> {
@@ -134,20 +138,7 @@ class NearbyScreenState extends State<NearbyScreen> {
         //   debugPrint("EddyStone beacon nearby!");
         for (var pBeacon in anchorBeacons) {
           if (pBeacon.beaconUUID == b.namespaceId) {
-            
-            debugPrint("Beacon " +
-                pBeacon.phoneMake +
-                "+" +
-                pBeacon.beaconUUID +
-                " is nearby!");
-            print("tx power: " + b.tx.toString());
-            print("Raw rssi: " + b.rawRssi.toString());
-            print("Filtered rssi: " + b.kfRssi.toString());
-            print("Log distance with raw rssi: " + b.rawRssiLogDistance.toString());
-            print("Log distance with filtered rssi: " + b.kfRssiLogDistance.toString());
-            print("RadiusNetworks distance with raw rssi: " + b.rawRssiLibraryDistance.toString());
-            print("RadiusNetworks distance with filtered rssi: " + b.kfRssiLibraryDistance.toString());
-          
+            //beaconDebugInfo(pBeacon, b);
 
             // If beacon has already been added, update lists and upload to database
             // else, create a new RangedBeaconInfo obj and add that
@@ -161,6 +152,17 @@ class NearbyScreenState extends State<NearbyScreen> {
               rbd.addRawRssiDistance(b.rawRssiLibraryDistance);
               rbd.addkfRssi(b.kfRssi);
               rbd.addkfRssiDistance(b.kfRssiLibraryDistance);
+
+              // If beacon has been provided know x and y, send for trilateration
+              // and min-max
+              if(pBeacon.x != null) {
+                rbd.x = pBeacon.x;
+                rbd.y = pBeacon.y;
+
+                Map<RangedBeaconData, double> rbdDistance = {rbd : b.kfRssiLogDistance};
+                
+                weightedTrilateration.addAnchorNode(rbd.beaconUUID, rbdDistance);
+              }
 
               rangedAnchorBeacons.add(rbd);
 
@@ -182,9 +184,12 @@ class NearbyScreenState extends State<NearbyScreen> {
                 () => appStateModel.uploadRangedBeaconData(
                     rangedBeaconData, beaconName));
 
+            print("RangedBeaconList length: " + rangedAnchorBeacons.length.toString());
+
             return RangedBeaconCard(beacon: pBeacon);
           } else {
             debugPrint("Beacon detected is not registered");
+            debugPrint("NamespaceID of non-registered beacon: " + b.namespaceId);
           }
         }
       }
@@ -258,11 +263,11 @@ class NearbyScreenState extends State<NearbyScreen> {
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           (connectivityResult == ConnectivityResult.none)
-              ? buildAlertTile(context, "Wifi required to broadcast beacon")
+              ? buildAlertTile(context, "Wifi required to send beacon data")
               : new Container(),
           (appStateModel.isScanning) ? buildProgressBarTile() : new Container(),
           (blState != BluetoothState.POWERED_ON)
-              ? buildAlertTile(context, "Please check whether Bluetooth is on")
+              ? buildAlertTile(context, "Please check that Bluetooth is on")
               : new Container(),
           Expanded(
             child: new ListView(
