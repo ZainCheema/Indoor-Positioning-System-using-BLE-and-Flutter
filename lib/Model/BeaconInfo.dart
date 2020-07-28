@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 
 class BeaconInfo {
 
-  BeaconInfo({@required this.phoneMake,@required this.beaconUUID,@required this.txPower,@required this.standardBroadcasting, x, y});
+  BeaconInfo({@required this.phoneMake,@required this.beaconUUID,@required this.txPower,@required this.standardBroadcasting, this.x, this.y});
 
   final String phoneMake;
   final String beaconUUID;

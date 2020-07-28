@@ -11,7 +11,7 @@ class KalmanFilter {
     }
     
     /* Kalman filter variables */
-    static const double TRAINING_PREDICTION_LIMIT = 50;
+    static const double TRAINING_PREDICTION_LIMIT = 500;
     double q; //process noise covariance
     double r; //measurement noise covariance
     double x; //value

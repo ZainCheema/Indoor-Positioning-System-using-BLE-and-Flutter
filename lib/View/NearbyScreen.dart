@@ -11,6 +11,7 @@ import 'package:umbrella/widgets.dart';
 import 'package:umbrella/UmbrellaBeaconTools/UmbrellaBeacon.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:umbrella/UmbrellaBeaconTools/LocalizationAlgorithms/WeightedTrilateration.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import '../styles.dart';
 
@@ -18,16 +19,15 @@ var firestoreReference = Firestore.instance;
 String beaconStatusMessage;
 AppStateModel appStateModel = AppStateModel.instance;
 
-WeightedTrilateration weightedTrilateration;
+WeightedTrilateration weightedTrilateration = new WeightedTrilateration();
 
 List<RangedBeaconData> rangedAnchorBeacons = new List<RangedBeaconData>();
-
 
 class NearbyScreen extends StatefulWidget {
   @override
   NearbyScreenState createState() {
     return NearbyScreenState();
-  }       
+  }
 }
 
 class NearbyScreenState extends State<NearbyScreen> {
@@ -149,19 +149,30 @@ class NearbyScreenState extends State<NearbyScreen> {
               RangedBeaconData rbd = new RangedBeaconData(
                   pBeacon.phoneMake, pBeacon.beaconUUID, b.tx);
               rbd.addRawRssi(b.rawRssi);
-              rbd.addRawRssiDistance(b.rawRssiLibraryDistance);
+              rbd.addRawRssiDistance(b.rawRssiLogDistance);
               rbd.addkfRssi(b.kfRssi);
-              rbd.addkfRssiDistance(b.kfRssiLibraryDistance);
+              rbd.addkfRssiDistance(b.kfRssiLogDistance);
 
               // If beacon has been provided know x and y, send for trilateration
               // and min-max
-              if(pBeacon.x != null) {
+              if (pBeacon.x != null) {
                 rbd.x = pBeacon.x;
                 rbd.y = pBeacon.y;
 
-                Map<RangedBeaconData, double> rbdDistance = {rbd : b.kfRssiLogDistance};
-                
-                weightedTrilateration.addAnchorNode(rbd.beaconUUID, rbdDistance);
+                Map<RangedBeaconData, double> rbdDistance = {
+                  rbd: b.kfRssiLogDistance
+                };
+
+                weightedTrilateration.addAnchorNode(
+                    rbd.beaconUUID, rbdDistance);
+                                  if(weightedTrilateration.conditionsMet) {
+                var coordinates = weightedTrilateration.calculatePosition();
+                var x = coordinates[0];
+                var y = coordinates[1];
+                Fluttertoast.showToast(msg: 
+                  "Coordinates: $x, $y"
+                );
+              }
               }
 
               rangedAnchorBeacons.add(rbd);
@@ -177,6 +188,28 @@ class NearbyScreenState extends State<NearbyScreen> {
             rangedBeaconData.addkfRssi(b.kfRssi);
             rangedBeaconData.addkfRssiDistance(b.kfRssiLogDistance);
 
+            if (pBeacon.x != null) {
+              rangedBeaconData.x = pBeacon.x;
+              rangedBeaconData.y = pBeacon.y;
+
+              Map<RangedBeaconData, double> rbdDistance = {
+                rangedBeaconData: b.kfRssiLogDistance
+              };
+
+              weightedTrilateration.addAnchorNode(
+                  rangedBeaconData.beaconUUID, rbdDistance);
+              if(weightedTrilateration.conditionsMet) {
+                var coordinates = weightedTrilateration.calculatePosition();
+                var x = coordinates[0];
+                var y = coordinates[1];
+                Fluttertoast.showToast(msg: 
+                  "Coordinates: $x, $y"
+                );
+              }
+            } else {
+              print("Beacon x is null");
+            }
+
             String beaconName = pBeacon.phoneMake + "+" + pBeacon.beaconUUID;
 
             new Timer(
@@ -184,12 +217,10 @@ class NearbyScreenState extends State<NearbyScreen> {
                 () => appStateModel.uploadRangedBeaconData(
                     rangedBeaconData, beaconName));
 
-            print("RangedBeaconList length: " + rangedAnchorBeacons.length.toString());
+            // print("RangedBeaconList length: " +
+            //     rangedAnchorBeacons.length.toString());
 
             return RangedBeaconCard(beacon: pBeacon);
-          } else {
-            debugPrint("Beacon detected is not registered");
-            debugPrint("NamespaceID of non-registered beacon: " + b.namespaceId);
           }
         }
       }

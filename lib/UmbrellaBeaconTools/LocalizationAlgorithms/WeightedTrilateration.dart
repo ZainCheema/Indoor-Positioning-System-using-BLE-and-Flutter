@@ -22,46 +22,51 @@ class WeightedTrilateration {
       new Map<String, Map<RangedBeaconData, double>>();
 
   addAnchorNode(String rbdID, Map<RangedBeaconData, double> rbdDistance) {
+
+              String associatedKeyForLargestVal;
       distanceToRangedNodes[rbdID] = rbdDistance;
 
 
     if (distanceToRangedNodes.length >= 3) {
-      print("Enough nodes detected to perform trilateration");
+      conditionsMet = true;
       // If list is know greater than 3, remove the node with the largest distance value
       if (distanceToRangedNodes.length > 3) {
-        var associatedKey;
+        print("Attempting to provide weighting...");
         double largestValue = 0;
         distanceToRangedNodes.forEach((k, v) {
           v.forEach((key, value) {
             if (value > largestValue) {
               largestValue = value;
-              associatedKey = key;
+              associatedKeyForLargestVal = k;
+              print("Largest value: $largestValue, Associated key: $associatedKeyForLargestVal");
             }
           });
-         v.remove(associatedKey);
         });
-
+        distanceToRangedNodes.remove(associatedKeyForLargestVal);
+        if(distanceToRangedNodes.length == 3) {
+          print("Set of beacons correctly weighted");
+        }
       }
       rbd1 = distanceToRangedNodes.values.elementAt(0).keys.toList().elementAt(0);
-      rbd2 = distanceToRangedNodes.values.elementAt(1).keys.toList().elementAt(1);
-      rbd3 = distanceToRangedNodes.values.elementAt(2).keys.toList().elementAt(2);
+      rbd2 = distanceToRangedNodes.values.elementAt(1).keys.toList().elementAt(0);
+      rbd3 = distanceToRangedNodes.values.elementAt(2).keys.toList().elementAt(0);
 
-      distance1 = distanceToRangedNodes.values.elementAt(0).values.elementAt(0);
-      distance2 = distanceToRangedNodes.values.elementAt(1).values.elementAt(1);
-      distance3 = distanceToRangedNodes.values.elementAt(2).values.elementAt(2);
-      calculatePosition();
+      distance1 = distanceToRangedNodes.values.elementAt(0).values.toList().elementAt(0);
+      distance2 = distanceToRangedNodes.values.elementAt(1).values.toList().elementAt(0);
+      distance3 = distanceToRangedNodes.values.elementAt(2).values.toList().elementAt(0);
+  //    calculatePosition();
+    } else {
+      conditionsMet = false;
     }
-  }
+  } 
 
   calculatePosition() {
-    print("calculatePosition() reached");
-
     var coordinates = [];
 
     var x =
         (pow(distance1, 2) - pow(distance2, 2)) + pow(rbd2.x, 2) / 2 * rbd2.x;
 
-    print("Calculated x coordinate: " + x.toString());
+   // print("Calculated x coordinate: " + x.toString());
 
     var y = ((pow(distance1, 2) - pow(distance3, 2)) +
             pow(rbd3.x, 2) +
@@ -70,7 +75,7 @@ class WeightedTrilateration {
         2 *
         rbd1.y;
 
-    print("Calculated y coordinate: " + y.toString());
+   // print("Calculated y coordinate: " + y.toString());
 
     coordinates.add(x);
     coordinates.add(y);
