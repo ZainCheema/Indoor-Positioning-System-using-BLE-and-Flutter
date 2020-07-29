@@ -5,7 +5,7 @@ import 'dart:math';
 
 class AndroidBeaconLibraryModel {
   getCalculatedDistance(double rssi, int txAt1Meter) {
-    double ratio = rssi * 1.0 / (txAt1Meter);
+    double ratio = rssi * 1.0 / (txAt1Meter.toDouble());
     if(ratio < 1.0) {
       return pow(ratio, 10);
     } else {

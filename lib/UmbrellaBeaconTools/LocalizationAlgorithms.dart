@@ -71,25 +71,34 @@ class Localization {
     }
   }
 
-  weightedTrilaterationPosition() {
-    double x =
-        (pow(distance1, 2) - pow(distance2, 2)) + pow(rbd2.x, 2) / 2 * rbd2.x;
+  // ignore: non_constant_identifier_names
+  WeightedTrilaterationPosition() {
 
-    print("Calculated x coordinate: " + x.toString());
+    double a = (-2 * rbd1.x) + (2 * rbd2.x);
+    double b = (-2 * rbd1.y) + (2 * rbd2.y);
+    double c = pow(distance1, 2) - pow(distance2, 2) - pow(rbd1.x, 2) + pow(rbd2.x, 2) - pow(rbd1.y, 2) + pow(rbd2.y, 2);
+    double d = (-2 * rbd2.x) + (2 * rbd3.x);
+    double e = (-2 * rbd2.y) + (2 * rbd3.y);
+    double f = pow(distance2, 2) - pow(distance3, 2) - pow(rbd2.x, 2) + pow(rbd3.x, 2) - pow(rbd2.y, 2) + pow(rbd3.y, 2);
 
-    double y = ((pow(distance1, 2) - pow(distance3, 2)) +
-            (pow(rbd3.x, 2) + pow(rbd3.y, 2) - (2 * rbd3.x * rbd1.x))) /
-        2 *
-        rbd3.y;
+    double x = (c*e - f*b);
+    x = x / (e*a - b*d);
+    
+    double y = (c*d - a*f);
+    y = y / (b*d - a*e);
 
-    print("Calculated y coordinate: " + y.toString());
 
     var coordinates = {'x': x, 'y': y};
+
+    print("Weighted x coordinate: " + x.toString());
+
+    print("Weighted y coordinate: " + y.toString());
 
     return coordinates;
   }
 
-  weightedMinMaxPosition() {
+  // ignore: non_constant_identifier_names
+  MinMaxPosition() {
     var xMin =
         Matrix.row([rbd1.x - distance1, rbd2.x - distance2, rbd3.x - distance3])
             .max();
@@ -101,18 +110,18 @@ class Localization {
         Matrix.row([rbd1.y - distance1, rbd2.y - distance2, rbd3.y - distance3])
             .max();
     var yMax =
-        Matrix.row([rbd1.y - distance1, rbd2.y - distance2, rbd3.y - distance3])
+        Matrix.row([rbd1.y + distance1, rbd2.y + distance2, rbd3.y + distance3])
             .min();
 
     var x = (xMin + xMax) / 2;
     var y = (yMin + yMax) / 2;
 
-        var coordinates = {'x': x, 'y': y};
+    var coordinates = {'x': x, 'y': y};
 
-    print("Calculated x coordinate: " + x.toString());
+    print("MinMax x coordinate: " + x.toString());
 
-    print("Calculated y coordinate: " + y.toString());
+    print("MinMax y coordinate: " + y.toString());
 
-        return coordinates;
+    return coordinates;
   }
 }

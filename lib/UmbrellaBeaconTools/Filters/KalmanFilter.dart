@@ -21,11 +21,11 @@ class KalmanFilter {
 
     double getFilteredValue(double measurement) {
       // prediction phase
-      if(predictionCycles < TRAINING_PREDICTION_LIMIT) {
+     // if(predictionCycles < TRAINING_PREDICTION_LIMIT) {
          p = p + q;
-         predictionCycles++;
-         print("FILTER TRAINING CYCLE: " + predictionCycles.toString());
-      }
+         //predictionCycles++;
+        // print("FILTER TRAINING CYCLE: " + predictionCycles.toString());
+      //}
 
       // measurement update
       k = p / (p + r);

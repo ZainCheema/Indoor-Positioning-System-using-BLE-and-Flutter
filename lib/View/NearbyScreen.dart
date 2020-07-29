@@ -164,9 +164,9 @@ class NearbyScreenState extends State<NearbyScreen> {
                 localization.addAnchorNode(
                     rbd.beaconUUID, rbdDistance);
                 if (localization.conditionsMet) {
-                  // var coordinates = localization.weightedTrilaterationPosition();
-                  // appStateModel.addWTXY(coordinates);
-                 var coordinates = localization.weightedMinMaxPosition();
+                  var coordinates = localization.WeightedTrilaterationPosition();
+                  appStateModel.addWTXY(coordinates);
+                 coordinates = localization.MinMaxPosition();
                appStateModel.addMinMaxXY(coordinates);
                 }
               }
@@ -196,9 +196,9 @@ class NearbyScreenState extends State<NearbyScreen> {
                   rangedBeaconData.beaconUUID, rbdDistance);
               if (localization.conditionsMet) {
                // print("Enough beacons for trilateration");
-                //var coordinates = localization.weightedTrilaterationPosition();
-               // appStateModel.addWTXY(coordinates);'
-               var coordinates = localization.weightedMinMaxPosition();
+                var coordinates = localization.WeightedTrilaterationPosition();
+               appStateModel.addWTXY(coordinates);
+               coordinates = localization.MinMaxPosition();
                appStateModel.addMinMaxXY(coordinates);
 
               }
