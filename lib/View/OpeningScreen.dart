@@ -240,7 +240,7 @@ class OpeningScreenState extends State<OpeningScreen> {
                         child: TextFormField(
                           enabled: allowTextInput,
                           keyboardType: TextInputType.number,
-                          maxLength: 3,
+                          maxLength: 5,
                           textAlign: TextAlign.center,
                           controller: xInput,
                           decoration: InputDecoration(
@@ -258,7 +258,7 @@ class OpeningScreenState extends State<OpeningScreen> {
                         child: TextFormField(
                           enabled: allowTextInput,
                           keyboardType: TextInputType.number,
-                          maxLength: 3,
+                          maxLength: 5,
                           textAlign: TextAlign.center,
                           controller: yInput,
                           decoration: InputDecoration(

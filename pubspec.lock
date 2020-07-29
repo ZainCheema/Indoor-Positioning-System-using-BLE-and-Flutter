@@ -177,13 +177,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  fluttertoast:
-    dependency: "direct main"
-    description:
-      name: fluttertoast
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "7.0.1+1"
   geolocator:
     dependency: "direct main"
     description:
@@ -219,6 +212,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.1.12"
+  injector:
+    dependency: transitive
+    description:
+      name: injector
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.8"
   js:
     dependency: transitive
     description:
@@ -247,6 +247,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.8"
+  ml_linalg:
+    dependency: "direct main"
+    description:
+      name: ml_linalg
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "12.17.1"
   nested:
     dependency: transitive
     description:
@@ -413,6 +420,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.6.1"
+  xrange:
+    dependency: transitive
+    description:
+      name: xrange
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.8"
 sdks:
   dart: ">=2.7.0 <3.0.0"
   flutter: ">=1.12.13+hotfix.5 <2.0.0"

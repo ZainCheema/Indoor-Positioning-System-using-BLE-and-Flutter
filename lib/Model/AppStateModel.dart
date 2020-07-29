@@ -42,11 +42,13 @@ class AppStateModel extends foundation.ChangeNotifier {
   // A list of all users in the app.
   List<BeaconInfo> anchorBeacons;
 
-  CollectionReference anchorPath =
-      Firestore.instance.collection('AnchorNodes');
+  CollectionReference anchorPath = Firestore.instance.collection('AnchorNodes');
 
-  CollectionReference rangedPath =
-      Firestore.instance.collection('RangedNodes');
+  CollectionReference rangedPath = Firestore.instance.collection('RangedNodes');
+
+  CollectionReference wtPath = Firestore.instance.collection('WeightedTri');
+
+  CollectionReference minmaxPath = Firestore.instance.collection('MinMax');
 
   Stream<QuerySnapshot> beaconSnapshots;
 
@@ -64,6 +66,8 @@ class AppStateModel extends foundation.ChangeNotifier {
     debugPrint("init() called");
 
     anchorBeacons = new List<BeaconInfo>();
+
+    Firestore.instance.settings(persistenceEnabled: false);
 
     DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
     AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
@@ -98,11 +102,8 @@ class AppStateModel extends foundation.ChangeNotifier {
     await anchorPath.document(path).delete();
   }
 
-  void uploadRangedBeaconData(
-      RangedBeaconData rbd, String beaconName) async {
-    await rangedPath
-        .document(beaconName)
-        .setData(rbd.toJson());
+  void uploadRangedBeaconData(RangedBeaconData rbd, String beaconName) async {
+    await rangedPath.document(beaconName).setData(rbd.toJson());
   }
 
   void streamAnchorBeacons() {
@@ -123,6 +124,15 @@ class AppStateModel extends foundation.ChangeNotifier {
     return anchorBeacons;
   }
 
+  addWTXY(var coordinates) async {
+    print("Data sent to Firestore: $coordinates");
+    await wtPath.add(coordinates);
+  }
+
+  addMinMaxXY(var coordinates) async {
+    await minmaxPath.add(coordinates);
+  }
+
   startBeaconBroadcast() async {
     BeaconBroadcast beaconBroadcast = BeaconBroadcast();
 
@@ -139,8 +149,7 @@ class AppStateModel extends foundation.ChangeNotifier {
               .setUUID(id)
               .setMajorId(randomNumber(1, 99))
               .setTransmissionPower(-59)
-              .setLayout(
-                  BeaconBroadcast.EDDYSTONE_UID_LAYOUT)
+              .setLayout(BeaconBroadcast.EDDYSTONE_UID_LAYOUT)
               .start();
         }
 

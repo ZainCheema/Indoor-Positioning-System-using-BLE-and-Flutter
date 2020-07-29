@@ -10,16 +10,14 @@ import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:umbrella/widgets.dart';
 import 'package:umbrella/UmbrellaBeaconTools/UmbrellaBeacon.dart';
 import 'package:wakelock/wakelock.dart';
-import 'package:umbrella/UmbrellaBeaconTools/LocalizationAlgorithms/WeightedTrilateration.dart';
-import 'package:fluttertoast/fluttertoast.dart';
+import 'package:umbrella/UmbrellaBeaconTools/LocalizationAlgorithms.dart';
 
 import '../styles.dart';
 
-var firestoreReference = Firestore.instance;
 String beaconStatusMessage;
 AppStateModel appStateModel = AppStateModel.instance;
 
-WeightedTrilateration weightedTrilateration = new WeightedTrilateration();
+Localization localization = new Localization();
 
 List<RangedBeaconData> rangedAnchorBeacons = new List<RangedBeaconData>();
 
@@ -163,16 +161,14 @@ class NearbyScreenState extends State<NearbyScreen> {
                   rbd: b.kfRssiLogDistance
                 };
 
-                weightedTrilateration.addAnchorNode(
+                localization.addAnchorNode(
                     rbd.beaconUUID, rbdDistance);
-                                  if(weightedTrilateration.conditionsMet) {
-                var coordinates = weightedTrilateration.calculatePosition();
-                var x = coordinates[0];
-                var y = coordinates[1];
-                Fluttertoast.showToast(msg: 
-                  "Coordinates: $x, $y"
-                );
-              }
+                if (localization.conditionsMet) {
+                  // var coordinates = localization.weightedTrilaterationPosition();
+                  // appStateModel.addWTXY(coordinates);
+                 var coordinates = localization.weightedMinMaxPosition();
+               appStateModel.addMinMaxXY(coordinates);
+                }
               }
 
               rangedAnchorBeacons.add(rbd);
@@ -196,15 +192,15 @@ class NearbyScreenState extends State<NearbyScreen> {
                 rangedBeaconData: b.kfRssiLogDistance
               };
 
-              weightedTrilateration.addAnchorNode(
+              localization.addAnchorNode(
                   rangedBeaconData.beaconUUID, rbdDistance);
-              if(weightedTrilateration.conditionsMet) {
-                var coordinates = weightedTrilateration.calculatePosition();
-                var x = coordinates[0];
-                var y = coordinates[1];
-                Fluttertoast.showToast(msg: 
-                  "Coordinates: $x, $y"
-                );
+              if (localization.conditionsMet) {
+               // print("Enough beacons for trilateration");
+                //var coordinates = localization.weightedTrilaterationPosition();
+               // appStateModel.addWTXY(coordinates);'
+               var coordinates = localization.weightedMinMaxPosition();
+               appStateModel.addMinMaxXY(coordinates);
+
               }
             } else {
               print("Beacon x is null");
