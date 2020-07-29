@@ -4,7 +4,6 @@ import 'package:umbrella/Model/RangedBeaconData.dart';
 
 // https://www.researchgate.net/publication/296700326_Problem_Investigation_of_Min-max_Method_for_RSSI_Based_Indoor_Localization
 // https://math.stackexchange.com/questions/884807/find-x-location-using-3-known-x-y-location-using-trilateration
-//https://journals.sagepub.com/doi/full/10.5772/63246
 class Localization {
   RangedBeaconData rbd1;
   RangedBeaconData rbd2;
@@ -73,20 +72,28 @@ class Localization {
 
   // ignore: non_constant_identifier_names
   WeightedTrilaterationPosition() {
-
     double a = (-2 * rbd1.x) + (2 * rbd2.x);
     double b = (-2 * rbd1.y) + (2 * rbd2.y);
-    double c = pow(distance1, 2) - pow(distance2, 2) - pow(rbd1.x, 2) + pow(rbd2.x, 2) - pow(rbd1.y, 2) + pow(rbd2.y, 2);
+    double c = pow(distance1, 2) -
+        pow(distance2, 2) -
+        pow(rbd1.x, 2) +
+        pow(rbd2.x, 2) -
+        pow(rbd1.y, 2) +
+        pow(rbd2.y, 2);
     double d = (-2 * rbd2.x) + (2 * rbd3.x);
     double e = (-2 * rbd2.y) + (2 * rbd3.y);
-    double f = pow(distance2, 2) - pow(distance3, 2) - pow(rbd2.x, 2) + pow(rbd3.x, 2) - pow(rbd2.y, 2) + pow(rbd3.y, 2);
+    double f = pow(distance2, 2) -
+        pow(distance3, 2) -
+        pow(rbd2.x, 2) +
+        pow(rbd3.x, 2) -
+        pow(rbd2.y, 2) +
+        pow(rbd3.y, 2);
 
-    double x = (c*e - f*b);
-    x = x / (e*a - b*d);
-    
-    double y = (c*d - a*f);
-    y = y / (b*d - a*e);
+    double x = (c * e - f * b);
+    x = x / (e * a - b * d);
 
+    double y = (c * d - a * f);
+    y = y / (b * d - a * e);
 
     var coordinates = {'x': x, 'y': y};
 

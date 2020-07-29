@@ -13,13 +13,18 @@ import 'package:wakelock/wakelock.dart';
 import 'package:umbrella/UmbrellaBeaconTools/LocalizationAlgorithms.dart';
 
 import '../styles.dart';
+import '../utils.dart';
 
 String beaconStatusMessage;
 AppStateModel appStateModel = AppStateModel.instance;
 
 Localization localization = new Localization();
 
-List<RangedBeaconData> rangedAnchorBeacons = new List<RangedBeaconData>();
+//List<RangedBeaconData> rangedAnchorBeacons = new List<RangedBeaconData>()
+Map<String, RangedBeaconData> rangedAnchorBeacons =
+    new Map<String, RangedBeaconData>();
+
+RangedBeaconData rbd;
 
 class NearbyScreen extends StatefulWidget {
   @override
@@ -140,83 +145,48 @@ class NearbyScreenState extends State<NearbyScreen> {
 
             // If beacon has already been added, update lists and upload to database
             // else, create a new RangedBeaconInfo obj and add that
-            RangedBeaconData rangedBeaconData = rangedAnchorBeacons.singleWhere(
-                (element) =>
-                    // ignore: missing_return
-                    element.beaconUUID == pBeacon.beaconUUID, orElse: () {
-              RangedBeaconData rbd = new RangedBeaconData(
+
+            if (!rangedAnchorBeacons.containsKey(pBeacon.beaconUUID)) {
+              rbd = new RangedBeaconData(
                   pBeacon.phoneMake, pBeacon.beaconUUID, b.tx);
               rbd.addRawRssi(b.rawRssi);
               rbd.addRawRssiDistance(b.rawRssiLogDistance);
               rbd.addkfRssi(b.kfRssi);
               rbd.addkfRssiDistance(b.kfRssiLogDistance);
 
-              // If beacon has been provided know x and y, send for trilateration
-              // and min-max
-              if (pBeacon.x != null) {
-                rbd.x = pBeacon.x;
-                rbd.y = pBeacon.y;
+              rbd.x = pBeacon.x;
+              rbd.y = pBeacon.y;
 
-                Map<RangedBeaconData, double> rbdDistance = {
-                  rbd: b.kfRssiLogDistance
-                };
-
-                localization.addAnchorNode(
-                    rbd.beaconUUID, rbdDistance);
-                if (localization.conditionsMet) {
-                  var coordinates = localization.WeightedTrilaterationPosition();
-                  appStateModel.addWTXY(coordinates);
-                 coordinates = localization.MinMaxPosition();
-               appStateModel.addMinMaxXY(coordinates);
-                }
-              }
-
-              rangedAnchorBeacons.add(rbd);
-
-              String beaconName = pBeacon.phoneMake + "+" + pBeacon.beaconUUID;
-
-              new Timer(const Duration(seconds: 1),
-                  () => appStateModel.uploadRangedBeaconData(rbd, beaconName));
-            });
-
-            rangedBeaconData.addRawRssi(b.rawRssi);
-            rangedBeaconData.addRawRssiDistance(b.rawRssiLogDistance);
-            rangedBeaconData.addkfRssi(b.kfRssi);
-            rangedBeaconData.addkfRssiDistance(b.kfRssiLogDistance);
-
-            if (pBeacon.x != null) {
-              rangedBeaconData.x = pBeacon.x;
-              rangedBeaconData.y = pBeacon.y;
-
-              Map<RangedBeaconData, double> rbdDistance = {
-                rangedBeaconData: b.kfRssiLogDistance
-              };
-
-              localization.addAnchorNode(
-                  rangedBeaconData.beaconUUID, rbdDistance);
-              if (localization.conditionsMet) {
-               // print("Enough beacons for trilateration");
-                var coordinates = localization.WeightedTrilaterationPosition();
-               appStateModel.addWTXY(coordinates);
-               coordinates = localization.MinMaxPosition();
-               appStateModel.addMinMaxXY(coordinates);
-
-              }
+              rangedAnchorBeacons[pBeacon.beaconUUID] = rbd;
             } else {
-              print("Beacon x is null");
+              rbd = rangedAnchorBeacons[pBeacon.beaconUUID];
+              rbd.addRawRssi(b.rawRssi);
+              rbd.addRawRssiDistance(b.rawRssiLogDistance);
+              rbd.addkfRssi(b.kfRssi);
+              rbd.addkfRssiDistance(b.kfRssiLogDistance);
+
+              rangedAnchorBeacons[pBeacon.beaconUUID] = rbd;
+            }
+
+            Map<RangedBeaconData, double> rbdDistance = {
+              rbd: b.kfRssiLogDistance
+            };
+
+            localization.addAnchorNode(rbd.beaconUUID, rbdDistance);
+            if (localization.conditionsMet) {
+              // print("Enough beacons for trilateration");
+              var coordinates = localization.WeightedTrilaterationPosition();
+              appStateModel.addWTXY(coordinates);
+              coordinates = localization.MinMaxPosition();
+              appStateModel.addMinMaxXY(coordinates);
             }
 
             String beaconName = pBeacon.phoneMake + "+" + pBeacon.beaconUUID;
 
-            new Timer(
-                const Duration(seconds: 1),
-                () => appStateModel.uploadRangedBeaconData(
-                    rangedBeaconData, beaconName));
+            new Timer(const Duration(seconds: 1),
+                () => appStateModel.uploadRangedBeaconData(rbd, beaconName));
 
-            // print("RangedBeaconList length: " +
-            //     rangedAnchorBeacons.length.toString());
-
-            return RangedBeaconCard(beacon: pBeacon);
+                     return RangedBeaconCard(beacon: pBeacon);
           }
         }
       }
