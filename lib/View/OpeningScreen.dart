@@ -109,7 +109,7 @@ class OpeningScreenState extends State<OpeningScreen> {
     if (appStateModel.isBroadcasting) {
       return new FloatingActionButton(
           child: new Icon(Icons.stop),
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.redAccent,
           onPressed: () {
             allowTextInput = true;
             appStateModel.stopBeaconBroadcast();
@@ -121,13 +121,12 @@ class OpeningScreenState extends State<OpeningScreen> {
     } else {
       return new FloatingActionButton(
           child: new Icon(Icons.record_voice_over),
-          backgroundColor: Colors.lightGreen,
+          backgroundColor: Colors.greenAccent,
           onPressed: () {
             // It is acceptable to leave both empty,
             // but you can't have one with text and the other without
             if (xInput.text.isEmpty & yInput.text.isEmpty) {
-              print("Both are empty, no trilateration");
-              coordinatesAreOK = true;
+              coordinatesAreOK = false;
             } else {
               print("You have inputted something");
               xCoordinate = double.tryParse(xInput.text) ?? null;
@@ -230,7 +229,7 @@ class OpeningScreenState extends State<OpeningScreen> {
                       Padding(
                         padding: const EdgeInsets.all(8.0),
                         child: Text(
-                          "Enter Cartesian X and Y Coordinates to use beacon as anchor for trilateration [OPTIONAL]",
+                          "Enter Cartesian X and Y Coordinates to use beacon as anchor for trilateration [REQUIRED]",
                           style: TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 15),
                         ),

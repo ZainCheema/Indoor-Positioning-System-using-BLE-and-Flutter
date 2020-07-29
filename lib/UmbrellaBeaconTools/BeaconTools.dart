@@ -56,7 +56,6 @@ abstract class Beacon {
     try {
       EddystoneUID eddystoneBeacon = EddystoneUID.fromScanResult(scanResult);
       if (eddystoneBeacon != null) {
-        debugPrint("Eddystone beacon found!");
         beaconList.add(eddystoneBeacon);
       }
     } on Exception catch (e) {

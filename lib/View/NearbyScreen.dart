@@ -5,20 +5,20 @@ import 'package:flutter/material.dart';
 import 'package:umbrella/Model/AppStateModel.dart';
 import 'package:umbrella/Model/BeaconInfo.dart';
 import 'package:umbrella/Model/RangedBeaconData.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:umbrella/widgets.dart';
 import 'package:umbrella/UmbrellaBeaconTools/UmbrellaBeacon.dart';
 import 'package:wakelock/wakelock.dart';
 import 'package:umbrella/UmbrellaBeaconTools/LocalizationAlgorithms.dart';
-
 import '../styles.dart';
-import '../utils.dart';
 
 String beaconStatusMessage;
 AppStateModel appStateModel = AppStateModel.instance;
 
 Localization localization = new Localization();
+
+Map<String, double> wtCoordinates;
+Map<String, double> minMaxCoordinates;
 
 //List<RangedBeaconData> rangedAnchorBeacons = new List<RangedBeaconData>()
 Map<String, RangedBeaconData> rangedAnchorBeacons =
@@ -54,7 +54,6 @@ class NearbyScreenState extends State<NearbyScreen> {
   void initState() {
     super.initState();
 
-    //bleManager.setLogLevel(LogLevel.verbose);
     bleManager.createClient();
 
     // Subscribe to state changes
@@ -81,6 +80,7 @@ class NearbyScreenState extends State<NearbyScreen> {
           appStateModel.wifiEnabled = true;
           debugPrint("Network connected");
         } else {
+          appStateModel.isScanning = false;
           appStateModel.wifiEnabled = false;
         }
       });
@@ -138,7 +138,6 @@ class NearbyScreenState extends State<NearbyScreen> {
 
     return beacons.values.map<Widget>((b) {
       if (b is EddystoneUID) {
-        //   debugPrint("EddyStone beacon nearby!");
         for (var pBeacon in anchorBeacons) {
           if (pBeacon.beaconUUID == b.namespaceId) {
             //beaconDebugInfo(pBeacon, b);
@@ -175,18 +174,18 @@ class NearbyScreenState extends State<NearbyScreen> {
             localization.addAnchorNode(rbd.beaconUUID, rbdDistance);
             if (localization.conditionsMet) {
               // print("Enough beacons for trilateration");
-              var coordinates = localization.WeightedTrilaterationPosition();
-              appStateModel.addWTXY(coordinates);
-              coordinates = localization.MinMaxPosition();
-              appStateModel.addMinMaxXY(coordinates);
+
+              wtCoordinates = localization.WeightedTrilaterationPosition();
+              appStateModel.addWTXY(wtCoordinates);
+
+              minMaxCoordinates = localization.MinMaxPosition();
+              appStateModel.addMinMaxXY(minMaxCoordinates);
             }
 
-            String beaconName = pBeacon.phoneMake + "+" + pBeacon.beaconUUID;
-
             new Timer(const Duration(seconds: 1),
-                () => appStateModel.uploadRangedBeaconData(rbd, beaconName));
+                () => appStateModel.uploadRangedBeaconData(rbd, pBeacon.phoneMake + "+" + pBeacon.beaconUUID));
 
-                     return RangedBeaconCard(beacon: pBeacon);
+            return RangedBeaconCard(beacon: rbd);
           }
         }
       }
@@ -198,7 +197,7 @@ class NearbyScreenState extends State<NearbyScreen> {
     if (appStateModel.isScanning) {
       return new FloatingActionButton(
           child: new Icon(Icons.stop),
-          backgroundColor: Colors.red,
+          backgroundColor: Colors.redAccent,
           onPressed: () {
             stopScan();
             setState(() {
@@ -208,7 +207,7 @@ class NearbyScreenState extends State<NearbyScreen> {
     } else {
       return new FloatingActionButton(
           child: new Icon(Icons.search),
-          backgroundColor: Colors.lightGreen,
+          backgroundColor: Colors.greenAccent,
           onPressed: () {
             appStateModel.checkGPS();
             appStateModel.checkLocationPermission();
@@ -259,6 +258,10 @@ class NearbyScreenState extends State<NearbyScreen> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
+          (rangedAnchorBeacons.length < 3) ?
+          buildInfoTitle(context, "You need " + (3 - rangedAnchorBeacons.length).toString() + " more anchor nodes for position estimate"):
+          buildInfoTitle(context, "Estimated Trilateration position: " + wtCoordinates['x'].toStringAsFixed(4) + " , " + wtCoordinates['y'].toStringAsFixed(4)
+          + "\n\nEstimated Min Max position: " + minMaxCoordinates['x'].toStringAsFixed(4) + " , " + minMaxCoordinates['y'].toStringAsFixed(4)),
           (connectivityResult == ConnectivityResult.none)
               ? buildAlertTile(context, "Wifi required to send beacon data")
               : new Container(),

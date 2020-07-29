@@ -1,5 +1,6 @@
 import 'package:android_intent/android_intent.dart';
 import 'package:flutter/material.dart';
+import 'package:umbrella/Model/RangedBeaconData.dart';
 import 'Model/BeaconInfo.dart';
 
 class BeaconInfoContainer extends StatelessWidget {
@@ -41,7 +42,7 @@ class BeaconInfoContainer extends StatelessWidget {
 }
 
 class RangedBeaconCard extends StatelessWidget {
-  final BeaconInfo beacon;
+  final RangedBeaconData beacon;
 
   RangedBeaconCard({@required this.beacon});
 
@@ -55,29 +56,75 @@ class RangedBeaconCard extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Align(
-                  alignment: Alignment.topRight,
-                  child: Text(beacon.beaconUUID)),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Align(
-                alignment: Alignment.centerLeft,
+                alignment: Alignment.center,
                 child: Text(
                   beacon.phoneMake,
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
                 ),
               ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: Align(
-                alignment: Alignment.bottomRight,
-                child: Text("DISTANCE HERE"),
+                alignment: Alignment.center,
+                child: Text(
+                  "Coordinates: [" + beacon.x.toString() + ", " + beacon.y.toString() + "]",
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+                ),
+              ),
+            ),
+                        Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                  alignment: Alignment.center,
+                  child: Text("Beacon ID: " + beacon.beaconUUID)),
+            ),
+                        Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text("Raw Rssi: " + beacon.rawRssi.last.toString()),
+              ),
+            ),
+                                    Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text("Kalman Filtered Rssi: " + beacon.rawRssi.last.toString()),
+              ),
+            ),
+                        Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text("Raw Distance: " + beacon.rawRssiDistance.last.toStringAsFixed(4)),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Align(
+                alignment: Alignment.center,
+                child: Text("Kalman Filtered Distance: " + beacon.kfRssiDistance.last.toStringAsFixed(4)),
               ),
             )
           ],
         )));
   }
+}
+
+buildInfoTitle(BuildContext context, String message) {
+    return new Container(
+    color: Colors.greenAccent,
+    child: Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: new ListTile(
+        title: new Text(
+          message,
+          style:  TextStyle(color: Colors.white,fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+      ),
+    ),
+  );
 }
 
 buildAlertTile(BuildContext context, String message) {
@@ -86,13 +133,11 @@ buildAlertTile(BuildContext context, String message) {
     child: new ListTile(
       title: new Text(
         message,
-        // ignore: deprecated_member_use
-        style: Theme.of(context).primaryTextTheme.subhead,
+        style: Theme.of(context).primaryTextTheme.subtitle1,
       ),
       trailing: new Icon(
         Icons.error,
-        // ignore: deprecated_member_use
-        color: Theme.of(context).primaryTextTheme.subhead.color,
+        color: Theme.of(context).primaryTextTheme.subtitle1.color,
       ),
     ),
   );
