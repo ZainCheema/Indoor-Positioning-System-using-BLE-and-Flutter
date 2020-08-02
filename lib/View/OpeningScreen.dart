@@ -58,6 +58,9 @@ class OpeningScreenState extends State<OpeningScreen> {
           debugPrint("Network connected");
         } else {
           appStateModel.wifiEnabled = false;
+          
+          appStateModel.stopBeaconBroadcast();
+          appStateModel.isBroadcasting = false;
         }
       });
     });
@@ -71,6 +74,9 @@ class OpeningScreenState extends State<OpeningScreen> {
           debugPrint("Bluetooth is on");
         } else {
           appStateModel.bluetoothEnabled = false;
+          
+          appStateModel.stopBeaconBroadcast();
+          appStateModel.isBroadcasting = false;
         }
       });
     });

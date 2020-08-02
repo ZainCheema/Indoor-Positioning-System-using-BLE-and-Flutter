@@ -20,7 +20,6 @@ Localization localization = new Localization();
 Map<String, double> wtCoordinates;
 Map<String, double> minMaxCoordinates;
 
-//List<RangedBeaconData> rangedAnchorBeacons = new List<RangedBeaconData>()
 Map<String, RangedBeaconData> rangedAnchorBeacons =
     new Map<String, RangedBeaconData>();
 
@@ -39,7 +38,7 @@ class NearbyScreenState extends State<NearbyScreen> {
   BleManager bleManager = BleManager();
 
   // Scanning
-  StreamSubscription _scanSubscription;
+  StreamSubscription beaconSubscription;
   Map<int, Beacon> beacons = new Map();
 
   // ignore: cancel_subscriptions
@@ -82,6 +81,7 @@ class NearbyScreenState extends State<NearbyScreen> {
         } else {
           appStateModel.isScanning = false;
           appStateModel.wifiEnabled = false;
+          stopScan();
         }
       });
     });
@@ -97,16 +97,10 @@ class NearbyScreenState extends State<NearbyScreen> {
     beacons.clear();
     bluetoothChanges?.cancel();
     bluetoothChanges = null;
-    _scanSubscription?.cancel();
-    _scanSubscription = null;
+    beaconSubscription?.cancel();
+    beaconSubscription = null;
     super.dispose();
   }
-
-  // _clearAllBeacons() {
-  //   setState(() {
-  //     beacons = Map<int, Beacon>();
-  //   });
-  // }
 
   startScan() {
     print("Scanning now");
@@ -117,7 +111,7 @@ class NearbyScreenState extends State<NearbyScreen> {
       appStateModel.isScanning = true;
     }
 
-    _scanSubscription = umbrellaBeacon.scan(bleManager).listen((beacon) {
+    beaconSubscription = umbrellaBeacon.scan(bleManager).listen((beacon) {
       setState(() {
         beacons[beacon.hash] = beacon;
       });
@@ -126,14 +120,14 @@ class NearbyScreenState extends State<NearbyScreen> {
 
   stopScan() {
     print("Scan stopped");
-    _scanSubscription?.cancel();
-    _scanSubscription = null;
+    beaconSubscription?.cancel();
+    beaconSubscription = null;
     setState(() {
       appStateModel.isScanning = false;
     });
   }
 
-  buildScanResultTiles() {
+  buildRangedBeaconTiles() {
     List<BeaconInfo> anchorBeacons = AppStateModel.instance.getAnchorBeacons();
 
     return beacons.values.map<Widget>((b) {
@@ -236,7 +230,7 @@ class NearbyScreenState extends State<NearbyScreen> {
   Widget build(BuildContext context) {
     var tiles = new List<Widget>();
 
-    tiles.addAll(buildScanResultTiles());
+    tiles.addAll(buildRangedBeaconTiles());
 
     return Scaffold(
       appBar: new AppBar(

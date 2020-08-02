@@ -39,7 +39,6 @@ class AppStateModel extends foundation.ChangeNotifier {
 
   String phoneMake = "";
 
-  // A list of all users in the app.
   List<BeaconInfo> anchorBeacons;
 
   CollectionReference anchorPath = Firestore.instance.collection('AnchorNodes');
@@ -61,8 +60,6 @@ class AppStateModel extends foundation.ChangeNotifier {
   }
 
   void init() async {
-    // This will check wifi, gps and bluetooth
-    // If all these checks pass, create the user, then load the nearby users
     debugPrint("init() called");
 
     anchorBeacons = new List<BeaconInfo>();
@@ -88,7 +85,6 @@ class AppStateModel extends foundation.ChangeNotifier {
       } else {
         debugPrint('user ID was of an incorrect format');
         debugPrint(id);
-        debugPrint("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
       }
     }
     streamAnchorBeacons();
@@ -103,7 +99,7 @@ class AppStateModel extends foundation.ChangeNotifier {
   }
 
   void uploadRangedBeaconData(RangedBeaconData rbd, String beaconName) async {
-    await rangedPath.document(beaconName).setData(rbd.toJson());
+    await rangedPath.document(beaconName).setData(rbd.toJson(), merge: true);
   }
 
   void streamAnchorBeacons() {

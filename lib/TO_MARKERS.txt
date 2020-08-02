@@ -1,0 +1,2 @@
+Please ensure that you follow the guide in the appendix of the report in order to 
+correctly broadcast as an Eddystone beacon. Thank you.

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_ble_lib/flutter_ble_lib.dart';
 import 'package:umbrella/UmbrellaBeaconTools/DistanceAlgorithms/AndroidBeaconLibraryModel.dart';
-import 'package:umbrella/UmbrellaBeaconTools/Filters/KalmanFilter.dart';
+import 'Filters/KalmanFilter.dart';
 import 'package:umbrella/UmbrellaBeaconTools/DistanceAlgorithms/LogDistancePathLossModel.dart';
 import 'package:umbrella/UmbrellaBeaconTools/UmbrellaBeacon.dart';
 import 'package:umbrella/utils.dart';
@@ -12,9 +12,7 @@ const EddystoneServiceId = "0000feaa-0000-1000-8000-00805f9b34fb";
 
 List<Beacon> beaconList = new List();
 
-KalmanFilter kf = new KalmanFilter(0.125, 32, 1023, 0);
-
-//KalmanFilter kf = new KalmanFilter(0.125, 32, 900, 0);
+KalmanFilter kf = new KalmanFilter(0.065, 1.4, 0, 0);
 
 // Adapted from: https://github.com/michaellee8/flutter_blue_beacon/blob/master/lib/beacon.dart
 abstract class Beacon {

@@ -21,11 +21,7 @@ class KalmanFilter {
 
     double getFilteredValue(double measurement) {
       // prediction phase
-     // if(predictionCycles < TRAINING_PREDICTION_LIMIT) {
          p = p + q;
-         //predictionCycles++;
-        // print("FILTER TRAINING CYCLE: " + predictionCycles.toString());
-      //}
 
       // measurement update
       k = p / (p + r);
@@ -33,23 +29,5 @@ class KalmanFilter {
       p = (1 - k) * p;
 
       return x;
-    }
-
-    void setParameters(double processNoise, double sensorNoise, double estimatedError) {
-        q = processNoise;
-        r = sensorNoise;
-        p = estimatedError;
-    }
-
-    double getProcessNoise() {
-      return q;
-    }
-    
-    double getSensorNoise() {
-      return r;
-    }
-    
-    double getEstimatedError() {
-      return p;
     }
 }

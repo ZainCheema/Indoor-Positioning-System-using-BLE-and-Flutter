@@ -4,12 +4,14 @@
 import 'dart:math';
 
 class AndroidBeaconLibraryModel {
+
   getCalculatedDistance(double rssi, int txAt1Meter) {
-    double ratio = rssi * 1.0 / (txAt1Meter.toDouble());
+    print(txAt1Meter);
+    var ratio = rssi * (1.0 / (txAt1Meter + 55));
     if(ratio < 1.0) {
       return pow(ratio, 10);
     } else {
-      return (0.89976) * pow(ratio, 7.7095) + 0.111;
+      return (1.21112) * pow(ratio, 7.560861) + 0.251;
     }
   }
 }

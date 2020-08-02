@@ -1,10 +1,8 @@
 
 class RangedBeaconData {
   List<double> rawRssi = new List<double>();
-  // List<double> rawRssiStandardDeviation;
   List<double> rawRssiDistance = new List<double>();
   List<double> kfRssi = new List<double>();
-//  List<double> kfRssiStandardDeviation;
   List<double> kfRssiDistance = new List<double>();
 
   double x;
@@ -46,10 +44,8 @@ class RangedBeaconData {
         'beaconUUID': beaconUUID,
         'txAt1Meter': txAt1Meter,
         'rawRssi': rawRssi,
-        // 'rawRssiSD': rawRssiStandardDeviation,
         'rawRssiDist': rawRssiDistance,
         'kfRssi': kfRssi,
-        //'kfRssiSD': kfRssiStandardDeviation,
         'kfRssiDist': kfRssiDistance,
       };
 }

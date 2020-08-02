@@ -3,7 +3,6 @@ import 'package:ml_linalg/linalg.dart';
 import 'package:umbrella/Model/RangedBeaconData.dart';
 
 // https://www.researchgate.net/publication/296700326_Problem_Investigation_of_Min-max_Method_for_RSSI_Based_Indoor_Localization
-// https://math.stackexchange.com/questions/884807/find-x-location-using-3-known-x-y-location-using-trilateration
 class Localization {
   RangedBeaconData rbd1;
   RangedBeaconData rbd2;
@@ -105,7 +104,7 @@ class Localization {
   }
 
   // ignore: non_constant_identifier_names
-  MinMaxPosition() {
+MinMaxPosition() {
     var xMin =
         Matrix.row([rbd1.x - distance1, rbd2.x - distance2, rbd3.x - distance3])
             .max();
