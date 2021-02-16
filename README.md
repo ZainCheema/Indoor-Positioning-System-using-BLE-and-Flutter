@@ -1,4 +1,4 @@
-# umbrella
+# Flutter Indoor Positioning System using Bluetooth Low Energy, Weighted Trilateration and Kalman Filtering
 
 A new Flutter project.
 
